@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-namespace SMSwitch.DTOs
+namespace SMSwitchCommon.DTOs
 {
     public sealed class MobileNumber
     {

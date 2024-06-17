@@ -1,46 +1,40 @@
-﻿using Microsoft.Extensions.Configuration;
-using Twilio;
-using Twilio.Rest.Verify.V2;
+﻿using HumanLanguages;
+using Microsoft.Extensions.Configuration;
+using SMSwitchCommon;
+using SMSwitchCommon.DTOs;
+using SMSwitchTelesign;
+using SMSwitchTwilio;
 
 namespace SMSwitch
 {
-	public sealed class SMSwitchService
+	public sealed class SMSwitchService : IServiceMobileNumbers
 	{
-		private readonly SMSwitchSettings _settings;
 
-		public SMSwitchService(IConfiguration configuration)
+		private readonly TwilioService _twilioService;
+		private readonly TelesignService _telesignService;
+		public SMSwitchService(
+			IConfiguration configuration,
+			TwilioService twilioService,
+			TelesignService telesignService
+			)
 		{
-			var smSwitchSettings = configuration.GetSection("SMSwitchSettings");
-
-			byte defaultLength = 6;
-			var otpLength = byte.TryParse(smSwitchSettings["OtpLength"], out byte l) ? l : defaultLength;
-
-			var twilioConfig = smSwitchSettings.GetSection("Twilio");
-
-
-			_settings = new SMSwitchSettings() 
-			{
-				AndroidAppHash = smSwitchSettings["AndroidAppHash"],
-				OtpLength = otpLength,
-				Twilio = new TwilioSettings() 
-				{
-					AccountSid = twilioConfig["AccountSid"],
-					AuthToken = twilioConfig["AuthToken"],
-					ServiceSid = twilioConfig["ServiceSid"],
-					RegisteredSenderPhoneNumber = twilioConfig["RegisteredSenderPhoneNumber"],
-				} 
-			};
-
-			TwilioClient.Init(_settings.Twilio.AccountSid, _settings.Twilio.AuthToken);
-
-			_ = ServiceResource.UpdateAsync(
-				codeLength: _settings.OtpLength,
-				pathSid: _settings.Twilio.ServiceSid
-			);
+			_twilioService = twilioService;
+			_telesignService = telesignService;
 		}
 
-		public string TwilioServiceSid => _settings.Twilio.ServiceSid;
-		public string? AndroidAppHash => _settings.AndroidAppHash;
-		public byte OtpLength => _settings.OtpLength;
+		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
+		{
+			return _telesignService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice);
+		}
+
+		public bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
+		{
+			return _telesignService.SendSMS(mobileWithCountryCode, shortMessageServiceMessage);
+		}
+
+		public bool VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+		{
+			return _telesignService.VerifyOTP(mobileWithCountryCode, OTP);
+		}
 	}
 }

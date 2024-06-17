@@ -1,22 +1,24 @@
 ﻿using HumanLanguages;
 using Microsoft.Extensions.Logging;
-using SMSwitch.DTOs;
+using SMSwitchCommon;
+using SMSwitchCommon.DTOs;
 using Twilio.Rest.Verify.V2.Service;
 
-namespace SMSwitch.Twilio
+namespace SMSwitchTwilio
 {
-    public sealed class TwilioService : IServiceMobileNumbers
+	public sealed class TwilioService : IServiceMobileNumbers
     {
-        private readonly SMSwitchService _smSwitchService;
-        private readonly ILogger<TwilioService> _logger;
+        private readonly TwilioInitializer _twilioInitializer;
+		private readonly ILogger<TwilioService> _logger;
 
-        public TwilioService(SMSwitchService smSwitchService, ILogger<TwilioService> logger)
+        public TwilioService(TwilioInitializer twilioInitializer, ILogger<TwilioService> logger)
         {
-            _smSwitchService = smSwitchService;
             _logger = logger;
+            _twilioInitializer = twilioInitializer;
+            
         }
 
-        public bool SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, string? appHash)
+        public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
         {
             var locale = languageISOCodeList.First().ToString();
             try
@@ -25,17 +27,22 @@ namespace SMSwitch.Twilio
                     to: $"+{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}",
                     channel: "sms",
                     locale: locale,
-                    pathServiceSid: _smSwitchService.TwilioServiceSid,
-                    appHash: appHash
-                );
+                    pathServiceSid: _twilioInitializer.TwilioSettings.TwilioPrivateSettings.ServiceSid,
+                    appHash: isAndroidDevice ? _twilioInitializer.TwilioSettings.AndroidAppHash : null
+				);
 
                 _logger.LogInformation($"OTP sent to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} status: {verification.Status}");
-                return !string.IsNullOrEmpty(verification?.Sid);
+                return new SMSwitchResponseSendOTP() { 
+                    IsSent = !string.IsNullOrEmpty(verification?.Sid),
+                    OtpLength = _twilioInitializer.TwilioSettings.OtpLength
+				};
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception, $"Could not send OTP to {mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} in {locale}");
-                return false;
+                return new SMSwitchResponseSendOTP() {
+                    IsSent = false
+                };
             }
         }
 
@@ -52,7 +59,7 @@ namespace SMSwitch.Twilio
                 var verification = VerificationCheckResource.Create(
                     to: $"+{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}",
                     code: OTP,
-                    pathServiceSid: _smSwitchService.TwilioServiceSid
+                    pathServiceSid: _twilioInitializer.TwilioSettings.TwilioPrivateSettings.ServiceSid
                 );
                 verified = verification?.Valid ?? false;
             }

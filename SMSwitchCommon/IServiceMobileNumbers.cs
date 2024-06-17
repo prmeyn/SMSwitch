@@ -1,11 +1,11 @@
 ﻿using HumanLanguages;
-using SMSwitch.DTOs;
+using SMSwitchCommon.DTOs;
 
-namespace SMSwitch
+namespace SMSwitchCommon
 {
 	public interface IServiceMobileNumbers
 	{
-		bool SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, string? appHash);
+		SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice);
 		bool VerifyOTP(MobileNumber mobileWithCountryCode, string OTP);
 		bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage);
 	}

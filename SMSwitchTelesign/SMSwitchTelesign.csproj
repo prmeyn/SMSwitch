@@ -7,16 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HumanLanguages" Version="8.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="Telesign" Version="2.2.5" />
+    <PackageReference Include="TelesignEnterprise" Version="2.2.3" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\MongoDbTokenManager\MongoDbTokenManager\MongoDbTokenManager.csproj" />
     <ProjectReference Include="..\SMSwitchCommon\SMSwitchCommon.csproj" />
-    <ProjectReference Include="..\SMSwitchTelesign\SMSwitchTelesign.csproj" />
-    <ProjectReference Include="..\SMSwitchTwilio\SMSwitchTwilio.csproj" />
   </ItemGroup>
 
 </Project>

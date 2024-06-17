@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SMSwitch.Twilio;
+using SMSwitchTelesign;
+using SMSwitchTwilio;
 
 namespace SMSwitch
 {
@@ -7,8 +8,13 @@ namespace SMSwitch
 	{
 		public static void AddSMSwitchServices(this IServiceCollection services)
 		{
-			services.AddSingleton<SMSwitchService>();
+			services.AddSingleton<TwilioInitializer>();
 			services.AddScoped<TwilioService>();
+
+			services.AddSingleton<TelesignInitializer>();
+			services.AddScoped<TelesignService>();
+
+			services.AddScoped<SMSwitchService>();
 		}
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SMSwitchPlivo;
+using SMSwitchPlivo.Database;
 using SMSwitchTelesign;
 using SMSwitchTwilio;
 
@@ -13,6 +15,10 @@ namespace SMSwitch
 
 			services.AddSingleton<TelesignInitializer>();
 			services.AddScoped<TelesignService>();
+
+			services.AddSingleton<PlivoInitializer>();
+			services.AddSingleton<PlivoDbService>();
+			services.AddScoped<PlivoService>();
 
 			services.AddScoped<SMSwitchService>();
 		}

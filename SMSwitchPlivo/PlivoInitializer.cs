@@ -1,32 +1,28 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Plivo;
+using SMSwitchCommon;
 
 namespace SMSwitchPlivo
 {
-	public sealed class PlivoInitializer
+	public sealed class PlivoInitializer : SMSwitchGeneralInitializer
 	{
 		internal readonly PlivoSettings PlivoSettings;
 		internal readonly PlivoApi PlivoApi;
 
 		public PlivoInitializer(
 			IConfiguration configuration,
-			ILogger<PlivoInitializer> logger)
+			ILogger<PlivoInitializer> logger): base(configuration)
 		{
 			try
 			{
-				var smSwitchSettings = configuration.GetSection("SMSwitchSettings");
-
-				byte defaultLength = 6;
-				var otpLength = byte.TryParse(smSwitchSettings["OtpLength"], out byte l) ? l : defaultLength;
-
-				var plivoConfig = smSwitchSettings.GetSection("Plivo");
+				var plivoConfig = SMSwitchSettings.GetSection("Plivo");
 
 
 				PlivoSettings = new PlivoSettings()
 				{
-					AndroidAppHash = smSwitchSettings["AndroidAppHash"],
-					OtpLength = otpLength,
+					AndroidAppHash = SMSwitchGeneralSettings.AndroidAppHash,
+					OtpLength = SMSwitchGeneralSettings.OtpLength,
 					PlivoPrivateSettings = new PlivoPrivateSettings()
 					{
 						AuthId = plivoConfig["AuthId"],

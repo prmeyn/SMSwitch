@@ -29,17 +29,17 @@ namespace SMSwitch
 
 		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
 		{
-			return _plivoService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice);
+			return _telesignService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice);
 		}
 
 		public bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
 		{
-			return _plivoService.SendSMS(mobileWithCountryCode, shortMessageServiceMessage);
+			return _telesignService.SendSMS(mobileWithCountryCode, shortMessageServiceMessage);
 		}
 
 		public bool VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
-			return _plivoService.VerifyOTP(mobileWithCountryCode, OTP);
+			return _telesignService.VerifyOTP(mobileWithCountryCode, OTP);
 		}
 	}
 }

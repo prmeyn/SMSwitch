@@ -1,30 +1,26 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using SMSwitchCommon;
 using Twilio;
 using Twilio.Rest.Verify.V2;
 
 namespace SMSwitchTwilio
 {
-	public sealed class TwilioInitializer
+	public sealed class TwilioInitializer: SMSwitchGeneralInitializer
 	{
 		internal readonly TwilioSettings TwilioSettings;
 		public TwilioInitializer(
 			IConfiguration configuration,
-			ILogger<TwilioInitializer> logger)
+			ILogger<TwilioInitializer> logger) : base(configuration)
 		{
 			try {
-				var smSwitchSettings = configuration.GetSection("SMSwitchSettings");
-
-				byte defaultLength = 6;
-				var otpLength = byte.TryParse(smSwitchSettings["OtpLength"], out byte l) ? l : defaultLength;
-
-				var twilioConfig = smSwitchSettings.GetSection("Twilio");
-
+				
+				var twilioConfig = SMSwitchSettings.GetSection("Twilio");
 
 				TwilioSettings = new TwilioSettings()
 				{
-					AndroidAppHash = smSwitchSettings["AndroidAppHash"],
-					OtpLength = otpLength,
+					AndroidAppHash = SMSwitchGeneralSettings.AndroidAppHash,
+					OtpLength = SMSwitchGeneralSettings.OtpLength,
 					TwilioPrivateSettings = new TwilioPrivateSettings()
 					{
 						AccountSid = twilioConfig["AccountSid"],

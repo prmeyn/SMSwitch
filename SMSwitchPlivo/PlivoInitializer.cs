@@ -16,7 +16,7 @@ namespace SMSwitchPlivo
 		{
 			try
 			{
-				var plivoConfig = SMSwitchSettings.GetSection("Plivo");
+				var plivoConfig = SMSwitchSettings.GetSection(SmsProvider.Plivo.ToString());
 
 
 				PlivoSettings = new PlivoSettings()

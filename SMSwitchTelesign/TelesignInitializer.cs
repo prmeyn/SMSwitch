@@ -17,7 +17,7 @@ namespace SMSwitchTelesign
 			try
 			{
 				
-				var telesignConfig = SMSwitchSettings.GetSection("Telesign");
+				var telesignConfig = SMSwitchSettings.GetSection(SmsProvider.Telesign.ToString());
 
 				TelesignSettings = new TelesignSettings()
 				{

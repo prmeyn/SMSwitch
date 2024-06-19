@@ -1,5 +1,4 @@
 ﻿using HumanLanguages;
-using Microsoft.Extensions.Configuration;
 using SMSwitchCommon;
 using SMSwitchCommon.DTOs;
 using SMSwitchPlivo;
@@ -11,17 +10,21 @@ namespace SMSwitch
 	public sealed class SMSwitchService : IServiceMobileNumbers
 	{
 
+		private readonly SMSwitchInitializer _smSwitchInitializer;
+
 		private readonly TwilioService _twilioService;
 		private readonly TelesignService _telesignService;
 		private readonly PlivoService _plivoService;
+		
 
 		public SMSwitchService(
-			IConfiguration configuration,
+			SMSwitchInitializer smSwitchInitializer,
 			TwilioService twilioService,
 			TelesignService telesignService,
 			PlivoService plivoService
 			)
 		{
+			_smSwitchInitializer = smSwitchInitializer;
 			_twilioService = twilioService;
 			_telesignService = telesignService;
 			_plivoService = plivoService;
@@ -29,6 +32,8 @@ namespace SMSwitch
 
 		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
 		{
+			var x = _smSwitchInitializer.SmsControls.FallBackPriority;
+
 			return _telesignService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice);
 		}
 

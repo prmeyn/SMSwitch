@@ -15,7 +15,7 @@ namespace SMSwitchTwilio
 		{
 			try {
 				
-				var twilioConfig = SMSwitchSettings.GetSection("Twilio");
+				var twilioConfig = SMSwitchSettings.GetSection(SmsProvider.Twilio.ToString());
 
 				TwilioSettings = new TwilioSettings()
 				{

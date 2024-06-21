@@ -1,4 +1,6 @@
 ﻿using HumanLanguages;
+using SMSwitch.Database;
+using SMSwitch.Database.DTOs;
 using SMSwitchCommon;
 using SMSwitchCommon.DTOs;
 using SMSwitchPlivo;
@@ -15,24 +17,30 @@ namespace SMSwitch
 		private readonly TwilioService _twilioService;
 		private readonly TelesignService _telesignService;
 		private readonly PlivoService _plivoService;
-		
+
+		private readonly SMSwitchDbService _smSwitchDbService;
+
+
 
 		public SMSwitchService(
 			SMSwitchInitializer smSwitchInitializer,
 			TwilioService twilioService,
 			TelesignService telesignService,
-			PlivoService plivoService
+			PlivoService plivoService,
+			SMSwitchDbService smSwitchDbService
 			)
 		{
 			_smSwitchInitializer = smSwitchInitializer;
 			_twilioService = twilioService;
 			_telesignService = telesignService;
 			_plivoService = plivoService;
+			_smSwitchDbService = smSwitchDbService;
 		}
 
 		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
 		{
-			var x = _smSwitchInitializer.SmsControls.FallBackPriority;
+			var expiryTimeUtc = DateTimeOffset.UtcNow.AddSeconds(_smSwitchInitializer.SmsControls.SessionTimeoutInSeconds);
+			var y = _smSwitchDbService.GetLatestSession(mobileWithCountryCode, expiryTimeUtc);
 
 			return _telesignService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice);
 		}

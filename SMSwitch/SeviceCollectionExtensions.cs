@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SMSwitch.Database;
 using SMSwitchCommon;
 using SMSwitchPlivo;
 using SMSwitchPlivo.Database;
@@ -12,6 +13,7 @@ namespace SMSwitch
 		public static void AddSMSwitchServices(this IServiceCollection services)
 		{
 			services.AddSingleton<SMSwitchInitializer>();
+			services.AddSingleton<SMSwitchDbService>();
 
 			services.AddSingleton<TwilioInitializer>();
 			services.AddScoped<TwilioService>();

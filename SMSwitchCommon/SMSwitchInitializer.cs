@@ -8,8 +8,9 @@ namespace SMSwitchCommon
 		public SMSwitchInitializer(IConfiguration configuration)
 		{
 			var smsControlsConfig = configuration.GetSection("SMSwitchSettings:Controls");
-			SmsControls = new SmsControls() { 
-				MaxRoundRobinAttempts = int.TryParse(smsControlsConfig[""], out int maxRoundRobinAttempts) ? maxRoundRobinAttempts : 1,
+			SmsControls = new SmsControls() {
+				SessionTimeoutInSeconds = int.TryParse(smsControlsConfig["SessionTimeoutInSeconds"], out int sessionTimeoutInSeconds) ? sessionTimeoutInSeconds : 240,
+				MaxRoundRobinAttempts = byte.TryParse(smsControlsConfig["MaxRoundRobinAttempts"], out byte maxRoundRobinAttempts) ? maxRoundRobinAttempts : (byte)1,
 				PriorityBasedOnCountryPhoneCode = smsControlsConfig.GetRequiredSection("PriorityBasedOnCountryPhoneCode")
 				.GetChildren()
 				.Where(c => byte.TryParse(c.Key, out byte _) && c.Get<string[]>().All(p => Enum.TryParse(p, out SmsProvider _)))

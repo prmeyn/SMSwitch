@@ -22,25 +22,36 @@ namespace SMSwitchTelesign
 			_mongoDbTokenService = mongoDbTokenService;
 		}
 
-		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
+		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
 		{
-			Dictionary<string, string> parameters = new Dictionary<string, string>() 
+			try
 			{
-				{ 
-					"verify_code",
-					_mongoDbTokenService.Generate(
-					logId: _logId,
-					id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber),
-					validityInSeconds: 120,
-					numberOfDigits: _telesignInitializer.TelesignSettings.OtpLength).Result
-				}
-			};
-			RestClient.TelesignResponse telesignResponse = _telesignInitializer.VerifyClient.Sms(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber, parameters);
+				Dictionary<string, string> parameters = new Dictionary<string, string>()
+				{
+					{
+						"verify_code",
+						_mongoDbTokenService.Generate(
+							logId: _logId,
+							id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber),
+							validityInSeconds: 120,
+							numberOfDigits: _telesignInitializer.TelesignSettings.OtpLength).Result
+					}
+				};
+				RestClient.TelesignResponse telesignResponse = _telesignInitializer.VerifyClient.Sms(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber, parameters);
 
-			return new SMSwitchResponseSendOTP() {
-				IsSent = telesignResponse.OK,
-				OtpLength = _telesignInitializer.TelesignSettings.OtpLength
-			};
+				return new SMSwitchResponseSendOTP()
+				{
+					IsSent = telesignResponse.OK,
+					OtpLength = _telesignInitializer.TelesignSettings.OtpLength
+				};
+			}
+			catch
+			{
+				return new SMSwitchResponseSendOTP()
+				{
+					IsSent = false
+				};
+			}
 		}
 
 		private TokenIdentifier getId(string countryPhoneCodeAndPhoneNumber)

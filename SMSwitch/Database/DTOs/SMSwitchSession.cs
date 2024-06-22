@@ -12,10 +12,6 @@ namespace SMSwitch.Database.DTOs
 		public DateTimeOffset? SuccessfullyVerifiedTimestampUTC { get; set; }
 		public required DateTimeOffset ExpiryTimeUTC { get; init; }
 		public Queue<SmsProvider>? SmsProvidersQueue { get; set; }
-
-		internal bool HasNotExpired()
-		{
-			return SuccessfullyVerifiedTimestampUTC == null && DateTimeOffset.UtcNow < ExpiryTimeUTC;
-		}
+		internal bool HasNotExpired() => SuccessfullyVerifiedTimestampUTC == null && DateTimeOffset.UtcNow < ExpiryTimeUTC;
 	}
 }

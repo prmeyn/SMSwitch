@@ -18,7 +18,7 @@ namespace SMSwitchTwilio
             
         }
 
-        public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
+        public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
         {
             var locale = languageISOCodeList.First().ToString();
             try
@@ -28,7 +28,7 @@ namespace SMSwitchTwilio
                     channel: "sms",
                     locale: locale,
                     pathServiceSid: _twilioInitializer.TwilioSettings.TwilioPrivateSettings.ServiceSid,
-                    appHash: isAndroidDevice ? _twilioInitializer.TwilioSettings.AndroidAppHash : null
+                    appHash: userAgent == UserAgent.Android ? _twilioInitializer.TwilioSettings.AndroidAppHash : null
 				);
 
                 _logger.LogInformation($"OTP sent to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} status: {verification.Status}");

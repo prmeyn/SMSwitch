@@ -36,7 +36,7 @@ namespace SMSwitch
 			_smSwitchDbService = smSwitchDbService;
 		}
 
-		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
+		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, HashSet<LanguageIsoCode> preferredLanguageIsoCodeList, UserAgent userAgent)
 		{
 			var expiryTimeUtc = DateTimeOffset.UtcNow.AddSeconds(_smSwitchInitializer.SmsControls.SessionTimeoutInSeconds);
 			var session = await _smSwitchDbService.GetOrCreateAndGetLatestSession(mobileWithCountryCode, expiryTimeUtc);
@@ -79,9 +79,9 @@ namespace SMSwitch
 
 				responseSendOTP = smsProvidersQueue.Peek() switch
 				{
-					SmsProvider.Twilio => await _twilioService.SendOTP(mobileWithCountryCode, languageISOCodeList, userAgent),
-					SmsProvider.Plivo => await _plivoService.SendOTP(mobileWithCountryCode, languageISOCodeList, userAgent),
-					SmsProvider.Telesign => await _telesignService.SendOTP(mobileWithCountryCode, languageISOCodeList, userAgent),
+					SmsProvider.Twilio => await _twilioService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
+					SmsProvider.Plivo => await _plivoService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
+					SmsProvider.Telesign => await _telesignService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
 					_ => throw new NotImplementedException(),
 				};
 
@@ -98,7 +98,7 @@ namespace SMSwitch
 			session.SmsProvidersQueue = smsProvidersQueue;
 			await _smSwitchDbService.UpdateSession(session);
 
-			return responseSendOTP;
+			return responseSendOTP ?? new SMSwitchResponseSendOTP() { IsSent = false }; 
 		}
 
 		public async Task<bool> SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)

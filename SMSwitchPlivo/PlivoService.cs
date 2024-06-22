@@ -19,14 +19,14 @@ namespace SMSwitchPlivo
 			_plivoDbService = plivoDbService;
 		}
 
-		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
+		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, HashSet<LanguageIsoCode> preferredLanguageIsoCodeList, UserAgent userAgent)
 		{
 			try 
 			{
 				var verifySessionResponse = _plivoInitializer.PlivoApi.VerifySession.Create(
-				recipient: mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
-				app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
-				channel: "sms");
+					recipient: mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
+					app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
+					channel: "sms");
 
 				await _plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID);
 

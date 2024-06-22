@@ -6,15 +6,16 @@ namespace SMSwitch.Database.DTOs
 	public sealed class SMSwitchSession
 	{
 		[BsonId]
-		public required string SessionId { get; set; }
-		public required string CountryPhoneCodeAndPhoneNumber { get; set; }
-		public required DateTimeOffset StartTimeUTC { get; set; }
-		public required DateTimeOffset ExpiryTimeUTC { get; set; }
-		public Queue<SmsProvider> SmsProvidersQueue { get; set; }
+		public required string SessionId { get; init; }
+		public required string CountryPhoneCodeAndPhoneNumber { get; init; }
+		public required DateTimeOffset StartTimeUTC { get; init; }
+		public DateTimeOffset? SuccessfullyVerifiedTimestampUTC { get; set; }
+		public required DateTimeOffset ExpiryTimeUTC { get; init; }
+		public Queue<SmsProvider>? SmsProvidersQueue { get; set; }
 
 		internal bool HasNotExpired()
 		{
-			return DateTimeOffset.UtcNow < ExpiryTimeUTC;
+			return SuccessfullyVerifiedTimestampUTC == null && DateTimeOffset.UtcNow < ExpiryTimeUTC;
 		}
 	}
 }

@@ -76,10 +76,8 @@ namespace SMSwitch
 
 			while (smsProvidersQueue.Count > 0)
 			{
-				SmsProvider currentProvider = smsProvidersQueue.Peek();
-				// Process the current provider here
 
-				responseSendOTP = currentProvider switch
+				responseSendOTP = smsProvidersQueue.Peek() switch
 				{
 					SmsProvider.Twilio => _twilioService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice),
 					SmsProvider.Plivo => _plivoService.SendOTP(mobileWithCountryCode, languageISOCodeList, isAndroidDevice),
@@ -114,15 +112,20 @@ namespace SMSwitch
 
 			if (session.SmsProvidersQueue?.Any() ?? false)
 			{
-				return session.SmsProvidersQueue.Peek() switch
+				var mobileNumberVerified =  session.SmsProvidersQueue.Peek() switch
 				{
 					SmsProvider.Twilio => _twilioService.VerifyOTP(mobileWithCountryCode, OTP),
 					SmsProvider.Plivo => _plivoService.VerifyOTP(mobileWithCountryCode, OTP),
 					SmsProvider.Telesign => _telesignService.VerifyOTP(mobileWithCountryCode, OTP),
 					_ => throw new NotImplementedException(),
 				};
+				if (mobileNumberVerified)
+				{
+					session.SuccessfullyVerifiedTimestampUTC = DateTimeOffset.UtcNow;
+					_smSwitchDbService.UpdateSession(session);
+				}
+				return mobileNumberVerified;
 			}
-
 			return false;
 		}
 	}

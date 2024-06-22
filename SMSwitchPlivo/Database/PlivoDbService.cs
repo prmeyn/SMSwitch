@@ -34,10 +34,10 @@ namespace SMSwitchPlivo.Database
 			return sessionInDb.SessionUUID;
 		}
 
-		internal void ClearSessionUUID(MobileNumber mobileWithCountryCode)
+		internal async Task ClearSessionUUID(MobileNumber mobileWithCountryCode)
 		{
 			var filter = getFilter(mobileWithCountryCode);
-			_plivoSessionCollection.DeleteMany(filter);
+			await _plivoSessionCollection.DeleteManyAsync(filter);
 		}
 	}
 }

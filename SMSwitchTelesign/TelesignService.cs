@@ -22,20 +22,19 @@ namespace SMSwitchTelesign
 			_mongoDbTokenService = mongoDbTokenService;
 		}
 
-		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
+		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
 		{
 			try
 			{
-				Dictionary<string, string> parameters = new Dictionary<string, string>()
-				{
-					{
-						"verify_code",
-						_mongoDbTokenService.Generate(
+				var OTP = await _mongoDbTokenService.Generate(
 							logId: _logId,
 							id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber),
 							validityInSeconds: 120,
-							numberOfDigits: _telesignInitializer.TelesignSettings.OtpLength).Result
-					}
+							numberOfDigits: _telesignInitializer.TelesignSettings.OtpLength);
+
+				Dictionary<string, string> parameters = new Dictionary<string, string>()
+				{
+					{ "verify_code",OTP }
 				};
 				RestClient.TelesignResponse telesignResponse = _telesignInitializer.VerifyClient.Sms(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber, parameters);
 
@@ -59,17 +58,17 @@ namespace SMSwitchTelesign
 			return $"{_logId}_{countryPhoneCodeAndPhoneNumber}";
 		}
 
-		public bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
+		public async Task<bool> SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+		public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
-			var isValid = _mongoDbTokenService.Validate(id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber), token: OTP).Result;
+			var isValid = await _mongoDbTokenService.Validate(id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber), token: OTP);
 			if (isValid)
 			{
-				_ = _mongoDbTokenService.Consume(getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber));
+				await _mongoDbTokenService.Consume(getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber));
 			}
 			return isValid;
 		}

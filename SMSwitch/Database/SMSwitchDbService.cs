@@ -20,9 +20,9 @@ namespace SMSwitch.Database
 
 		private FilterDefinition<SMSwitchSession> Filter(MobileNumber mobileWithCountryCode) => Builders<SMSwitchSession>.Filter.Eq(t => t.CountryPhoneCodeAndPhoneNumber, mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber);
 		private FilterDefinition<SMSwitchSession> Filter(string sessionId) => Builders<SMSwitchSession>.Filter.Eq(t => t.SessionId, sessionId);
-		internal SMSwitchSession GetOrCreateAndGetLatestSession(MobileNumber mobileWithCountryCode, DateTimeOffset expiryTimeUTC)
+		internal async Task<SMSwitchSession> GetOrCreateAndGetLatestSession(MobileNumber mobileWithCountryCode, DateTimeOffset expiryTimeUTC)
 		{
-			var latestSession = GetLatestSession(mobileWithCountryCode);
+			var latestSession = await GetLatestSession(mobileWithCountryCode);
 			if (latestSession != null && latestSession.HasNotExpired())
 			{
 				return latestSession;
@@ -35,24 +35,29 @@ namespace SMSwitch.Database
 				ExpiryTimeUTC = expiryTimeUTC
 			};
 
-			_ = _smSwitchSessionCollection.InsertOneAsync(latestSession);
+			await _smSwitchSessionCollection.InsertOneAsync(latestSession);
 
 			return latestSession;
 		}
 
-		internal void UpdateSession(SMSwitchSession session)
+		internal async Task UpdateSession(SMSwitchSession session)
 		{
 			var options = new ReplaceOptions { IsUpsert = true };
-			_smSwitchSessionCollection.ReplaceOne(Filter(session.SessionId), session, options);
+			await _smSwitchSessionCollection.ReplaceOneAsync(Filter(session.SessionId), session, options);
 		}
 
-		internal SMSwitchSession GetLatestSession(MobileNumber mobileWithCountryCode)
+		internal async Task<SMSwitchSession?> GetLatestSession(MobileNumber mobileWithCountryCode)
 		{
-			var allRecords = _smSwitchSessionCollection.Find(Filter(mobileWithCountryCode)).ToList();
+			var allRecords = _smSwitchSessionCollection.Find(Filter(mobileWithCountryCode));
 
-			return allRecords
+			if (allRecords?.Any() ?? false)
+			{
+				var list = allRecords.ToList();
+				return list
 				.OrderByDescending(record => record.ExpiryTimeUTC)
 				.FirstOrDefault();
+			}
+			return null;
 		}
 	}
 }

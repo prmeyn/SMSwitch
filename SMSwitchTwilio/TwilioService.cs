@@ -18,12 +18,12 @@ namespace SMSwitchTwilio
             
         }
 
-        public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
+        public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
         {
             var locale = languageISOCodeList.First().ToString();
             try
             {
-                var verification = VerificationResource.Create(
+                var verification = await VerificationResource.CreateAsync(
                     to: $"+{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}",
                     channel: "sms",
                     locale: locale,
@@ -46,17 +46,17 @@ namespace SMSwitchTwilio
             }
         }
 
-        public bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
+        public async Task<bool> SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
         {
             throw new NotImplementedException();
         }
 
-        public bool VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+        public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
         {
             bool verified = false;
             try
             {
-                var verification = VerificationCheckResource.Create(
+                var verification = await VerificationCheckResource.CreateAsync(
                     to: $"+{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}",
                     code: OTP,
                     pathServiceSid: _twilioInitializer.TwilioSettings.TwilioPrivateSettings.ServiceSid

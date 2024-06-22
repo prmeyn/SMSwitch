@@ -19,7 +19,7 @@ namespace SMSwitchPlivo
 			_plivoDbService = plivoDbService;
 		}
 
-		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
+		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, UserAgent userAgent)
 		{
 			try 
 			{
@@ -28,7 +28,7 @@ namespace SMSwitchPlivo
 				app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
 				channel: "sms");
 
-				_plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID).Wait();
+				await _plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID);
 
 				return new SMSwitchResponseSendOTP()
 				{
@@ -45,19 +45,20 @@ namespace SMSwitchPlivo
 			}
 			
 		}
-		public bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
+		public Task<bool> SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
 		{
 			throw new NotImplementedException();
 		}
 
-		public bool VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+		public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
-			var sessionUuid = _plivoDbService.GetLatestSessionUUID(mobileWithCountryCode).Result;
+			var sessionUuid = await _plivoDbService.GetLatestSessionUUID(mobileWithCountryCode);
 
 			try
 			{
 				var response = _plivoInitializer.PlivoApi.VerifySession.Validate(session_uuid: sessionUuid, otp: OTP);
-			} catch
+			}
+			catch
 			{
 				return false;
 			}
@@ -65,7 +66,7 @@ namespace SMSwitchPlivo
 
 			if (_plivoInitializer.PlivoApi.VerifySession.Get(sessionUuid).Status.ToLower() == "verified")
 			{
-				_plivoDbService.ClearSessionUUID(mobileWithCountryCode);
+				await _plivoDbService.ClearSessionUUID(mobileWithCountryCode);
 				return true;
 			}
 			return false;

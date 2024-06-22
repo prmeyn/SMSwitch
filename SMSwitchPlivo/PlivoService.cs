@@ -21,17 +21,29 @@ namespace SMSwitchPlivo
 
 		public SMSwitchResponseSendOTP SendOTP(MobileNumber mobileWithCountryCode, LanguageId[] languageISOCodeList, bool isAndroidDevice)
 		{
-			var verifySessionResponse = _plivoInitializer.PlivoApi.VerifySession.Create(
+			try 
+			{
+				var verifySessionResponse = _plivoInitializer.PlivoApi.VerifySession.Create(
 				recipient: mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
 				app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
 				channel: "sms");
 
-			_plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID).Wait();
+				_plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID).Wait();
 
-			return new SMSwitchResponseSendOTP() {
-				IsSent = verifySessionResponse.StatusCode.ToString().StartsWith("2"),
-				OtpLength = _plivoInitializer.PlivoSettings.OtpLength
-			};
+				return new SMSwitchResponseSendOTP()
+				{
+					IsSent = verifySessionResponse.StatusCode.ToString().StartsWith("2"),
+					OtpLength = _plivoInitializer.PlivoSettings.OtpLength
+				};
+			}
+			catch
+			{
+				return new SMSwitchResponseSendOTP()
+				{
+					IsSent = false
+				};
+			}
+			
 		}
 		public bool SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
 		{

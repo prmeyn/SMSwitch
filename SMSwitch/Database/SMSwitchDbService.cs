@@ -19,13 +19,40 @@ namespace SMSwitch.Database
 		}
 
 		private FilterDefinition<SMSwitchSession> Filter(MobileNumber mobileWithCountryCode) => Builders<SMSwitchSession>.Filter.Eq(t => t.CountryPhoneCodeAndPhoneNumber, mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber);
+		private FilterDefinition<SMSwitchSession> Filter(string sessionId) => Builders<SMSwitchSession>.Filter.Eq(t => t.SessionId, sessionId);
+		internal SMSwitchSession GetOrCreateAndGetLatestSession(MobileNumber mobileWithCountryCode, DateTimeOffset expiryTimeUTC)
+		{
+			var latestSession = GetLatestSession(mobileWithCountryCode);
+			if (latestSession != null && latestSession.HasNotExpired())
+			{
+				return latestSession;
+			}
+			latestSession = new SMSwitchSession()
+			{
+				SessionId = Guid.NewGuid().ToString(),
+				CountryPhoneCodeAndPhoneNumber = mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
+				StartTimeUTC = DateTimeOffset.UtcNow,
+				ExpiryTimeUTC = expiryTimeUTC
+			};
 
-		internal SMSwitchSession GetLatestSession(MobileNumber mobileWithCountryCode, DateTimeOffset expiryTimeUTC)
+			_ = _smSwitchSessionCollection.InsertOneAsync(latestSession);
+
+			return latestSession;
+		}
+
+		internal void UpdateSession(SMSwitchSession session)
+		{
+			var options = new ReplaceOptions { IsUpsert = true };
+			_smSwitchSessionCollection.ReplaceOne(Filter(session.SessionId), session, options);
+		}
+
+		internal SMSwitchSession GetLatestSession(MobileNumber mobileWithCountryCode)
 		{
 			var allRecords = _smSwitchSessionCollection.Find(Filter(mobileWithCountryCode)).ToList();
 
-			var x = allRecords.Where(record => record.ExpiryTimeUTC <= expiryTimeUTC).ToList();
-			return null; // todo
+			return allRecords
+				.OrderByDescending(record => record.ExpiryTimeUTC)
+				.FirstOrDefault();
 		}
 	}
 }

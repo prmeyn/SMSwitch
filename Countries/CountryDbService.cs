@@ -1,6 +1,5 @@
 ﻿using Countries.Database.DTOs;
 using EarthCountriesInfo;
-//using HumanLanguages;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
@@ -15,10 +14,15 @@ namespace Countries
 		IMongoDatabase _database;
 		private IMongoCollection<CountryInfo> _countryPhoneCodeCollection;
 
-		public CountryDbService(ILogger<CountryDbService> logger, MongoService mongoService)
+		private CountryInitializer _countryInitializer;
+
+
+
+		public CountryDbService(ILogger<CountryDbService> logger, MongoService mongoService, CountryInitializer countryInitializer)
 		{
 			_logger = logger;
 			_countryPhoneCodeCollection = mongoService.Database.GetCollection<CountryInfo>(nameof(CountryInfo), new MongoCollectionSettings() { ReadConcern = ReadConcern.Majority, WriteConcern = WriteConcern.WMajority });
+			_countryInitializer = countryInitializer; ;
 		}
 
 		public async Task LoadCollectionFromCodeBase()
@@ -126,22 +130,6 @@ namespace Countries
 			_logger.LogInformation("CountryDbService running.");
 
 			await LoadCollectionFromCodeBase();
-
-
-			//var supportedLanguages = Enum.GetValues(typeof(LanguageId))
-			//				 .Cast<LanguageId>()
-			//				 .Where(langIsoCode => SupportedLanguages.SupportedLanguageIds.Contains(langIsoCode));
-
-
-			//var allCountries = await _countryPhoneCodeCollection.Find(_ => true).ToListAsync();
-
-			//var countriesWithoutCountryNames = allCountries
-			//				.Where(ci => !supportedLanguages.All(lang => ci.CountryNames.ContainsKey(lang.ToString()) && !string.IsNullOrEmpty(ci.CountryNames[lang.ToString()])));
-
-			//if (countriesWithoutCountryNames.Any())
-			//{
-			//	throw new Exception($"Translation for Country {countriesWithoutCountryNames.First().CountryCode} is not found in all supported languages.");
-			//}
 		}
 
 		public Task StopAsync(CancellationToken stoppingToken)
@@ -168,7 +156,7 @@ namespace Countries
 			var countryToUpdate = await _countryPhoneCodeCollection.Find(filter).FirstOrDefaultAsync();
 			if (countryToUpdate.ValidLengthsAndFormat == null)
 			{
-				countryToUpdate.ValidLengthsAndFormat = new();
+				countryToUpdate.ValidLengthsAndFormat = [];
 			}
 			if (countryToUpdate != null && countryToUpdate.CountryPhoneCode == countryPhoneCode && !countryToUpdate.ValidLengthsAndFormat.TryGetValue(phoneNumberLength.ToString(), out string? _))
 			{
@@ -190,21 +178,15 @@ namespace Countries
 			return hashString.ToString();
 		}
 
-		private static HashSet<CountryIsoCode> _supportedCountries = new()
-		{
-			CountryIsoCode.IN,
-			CountryIsoCode.PR,
-			CountryIsoCode.DK,
-			CountryIsoCode.FI
-		};
 
-		private HashSet<CountryInfo> _dataSource = EarthCountriesInfo.Countries.CountryPropertiesDictionary.Select(c => new CountryInfo
+
+		private HashSet<CountryInfo> _dataSource => EarthCountriesInfo.Countries.CountryPropertiesDictionary.Select(c => new CountryInfo
 		{
 			CountryCode = c.Key.ToString(),
 			CountryNames = c.Value.CountryNames.ToDictionary(c => c.Key.ToString(), c => c.Value),
 			CountryPhoneCode = c.Value.CountryPhoneCode,
 			ValidLengthsAndFormat = c.Value.ValidLengthsAndFormat?.ToDictionary(vl => vl.Key.ToString(), vl => vl.Value),
-			IsSupported = _supportedCountries.Contains(c.Key),
+			IsSupported = (_countryInitializer.SupportedCountries?.Any() ?? false) ? _countryInitializer.SupportedCountries.Contains(c.Key) : true,
 		}).ToHashSet();
 
 	}

@@ -8,7 +8,7 @@ namespace SMSwitchCommon
 		public readonly IConfigurationSection SMSwitchSettings;
 		public SMSwitchGeneralInitializer(IConfiguration configuration)
 		{
-			SMSwitchSettings = configuration.GetSection("SMSwitchSettings");
+			SMSwitchSettings = configuration.GetSection(ConstantStrings.SMSwitchSettingsName);
 
 			byte defaultLength = 6;
 			var otpLength = byte.TryParse(SMSwitchSettings["OtpLength"], out byte l) ? l : defaultLength;

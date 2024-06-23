@@ -8,13 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="EarthCountriesInfo" Version="2.1.0" />
-    <PackageReference Include="HumanLanguages" Version="8.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="MongoDB.Bson" Version="2.26.0" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\MongoDbService\MongoDbService\MongoDbService.csproj" />
+    <ProjectReference Include="..\SMSwitchCommon\SMSwitchCommon.csproj" />
   </ItemGroup>
 
 </Project>

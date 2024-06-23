@@ -11,10 +11,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
+    <PackageReference Include="MongoDbService" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MongoDbService\MongoDbService\MongoDbService.csproj" />
     <ProjectReference Include="..\Countries\Countries.csproj" />
     <ProjectReference Include="..\SMSwitchCommon\SMSwitchCommon.csproj" />
     <ProjectReference Include="..\SMSwitchPlivo\SMSwitchPlivo.csproj" />

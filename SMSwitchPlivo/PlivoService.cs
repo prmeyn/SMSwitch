@@ -36,8 +36,9 @@ namespace SMSwitchPlivo
 					OtpLength = _plivoInitializer.PlivoSettings.OtpLength
 				};
 			}
-			catch
+			catch(Exception exception)
 			{
+				_logger.LogError(exception, $"Could not send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
 				return new SMSwitchResponseSendOTP()
 				{
 					IsSent = false
@@ -52,24 +53,22 @@ namespace SMSwitchPlivo
 
 		public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
-			var sessionUuid = await _plivoDbService.GetLatestSessionUUID(mobileWithCountryCode);
-
 			try
 			{
+				var sessionUuid = await _plivoDbService.GetLatestSessionUUID(mobileWithCountryCode);
 				var response = _plivoInitializer.PlivoApi.VerifySession.Validate(session_uuid: sessionUuid, otp: OTP);
-			}
-			catch
-			{
+				if (_plivoInitializer.PlivoApi.VerifySession.Get(sessionUuid).Status.ToLower() == "verified")
+				{
+					await _plivoDbService.ClearSessionUUID(mobileWithCountryCode);
+					return true;
+				}
 				return false;
 			}
-			
-
-			if (_plivoInitializer.PlivoApi.VerifySession.Get(sessionUuid).Status.ToLower() == "verified")
+			catch(Exception exception)
 			{
-				await _plivoDbService.ClearSessionUUID(mobileWithCountryCode);
-				return true;
+				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				return false;
 			}
-			return false;
 		}
 	}
 }

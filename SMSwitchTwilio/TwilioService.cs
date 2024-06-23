@@ -20,7 +20,7 @@ namespace SMSwitchTwilio
             
         }
 
-        private HashSet<LanguageIsoCode> SupportedLanguageIsoCodesForVerifyDefaultTemplate => new() //https://www.twilio.com/docs/verify/supported-languages#verify-default-template
+        private HashSet<LanguageIsoCode> _supportedLanguageIsoCodesForVerifyDefaultTemplate => new() //https://www.twilio.com/docs/verify/supported-languages#verify-default-template
         {
 			HumanHelper.CreateLanguageIsoCode("af"),
             HumanHelper.CreateLanguageIsoCode("ar"),
@@ -68,7 +68,7 @@ namespace SMSwitchTwilio
 
 		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, HashSet<LanguageIsoCode> preferredLanguageIsoCodeList, UserAgent userAgent)
         {
-            var locale = preferredLanguageIsoCodeList.FirstOrDefault(l => SupportedLanguageIsoCodesForVerifyDefaultTemplate.Contains(l))?.ToIsoCodeString() ?? "en";
+            var locale = preferredLanguageIsoCodeList.FirstOrDefault(l => _supportedLanguageIsoCodesForVerifyDefaultTemplate.Contains(l))?.ToIsoCodeString() ?? "en";
             try
             {
                 var verification = await VerificationResource.CreateAsync(
@@ -79,7 +79,6 @@ namespace SMSwitchTwilio
                     appHash: userAgent == UserAgent.Android ? _twilioInitializer.TwilioSettings.AndroidAppHash : null
 				);
 
-                _logger.LogInformation($"OTP sent to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} status: {verification.Status}");
                 return new SMSwitchResponseSendOTP() { 
                     IsSent = !string.IsNullOrEmpty(verification?.Sid),
                     OtpLength = _twilioInitializer.TwilioSettings.OtpLength
@@ -87,7 +86,7 @@ namespace SMSwitchTwilio
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Could not send OTP to {mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} in {locale}");
+                _logger.LogError(exception, $"Could not send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} in {locale}");
                 return new SMSwitchResponseSendOTP() {
                     IsSent = false
                 };
@@ -111,9 +110,9 @@ namespace SMSwitchTwilio
                 );
                 verified = verification?.Valid ?? false;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _logger.LogError(e, $"Verification of OTP failed for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
             }
             return verified;
         }

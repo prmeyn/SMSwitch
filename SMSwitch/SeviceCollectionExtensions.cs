@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Countries;
+using Microsoft.Extensions.DependencyInjection;
 using SMSwitch.Database;
 using SMSwitchCommon;
 using SMSwitchPlivo;
@@ -12,6 +13,9 @@ namespace SMSwitch
 	{
 		public static void AddSMSwitchServices(this IServiceCollection services)
 		{
+			services.AddSingleton<CountryDbService>();
+			services.AddHostedService<CountryDbService>();
+
 			services.AddSingleton<SMSwitchInitializer>();
 			services.AddSingleton<SMSwitchDbService>();
 

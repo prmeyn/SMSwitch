@@ -13,7 +13,6 @@ namespace SMSwitchTelesign
 		private readonly TelesignInitializer _telesignInitializer;
 		private readonly ILogger<TelesignService> _logger;
 		private readonly MongoDbTokenService _mongoDbTokenService;
-		private readonly string _logId = "TelesignService";
 
 		public TelesignService(TelesignInitializer telesignInitializer, ILogger<TelesignService> logger, MongoDbTokenService mongoDbTokenService)
 		{
@@ -27,7 +26,7 @@ namespace SMSwitchTelesign
 			try
 			{
 				var OTP = await _mongoDbTokenService.Generate(
-							logId: _logId,
+							logId: SmsProvider.Telesign.ToString(),
 							id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber),
 							validityInSeconds: 120,
 							numberOfDigits: _telesignInitializer.TelesignSettings.OtpLength);
@@ -44,8 +43,9 @@ namespace SMSwitchTelesign
 					OtpLength = _telesignInitializer.TelesignSettings.OtpLength
 				};
 			}
-			catch
+			catch(Exception exception)
 			{
+				_logger.LogError(exception, $"Could not send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
 				return new SMSwitchResponseSendOTP()
 				{
 					IsSent = false
@@ -55,7 +55,7 @@ namespace SMSwitchTelesign
 
 		private TokenIdentifier getId(string countryPhoneCodeAndPhoneNumber)
 		{
-			return $"{_logId}_{countryPhoneCodeAndPhoneNumber}";
+			return $"{SmsProvider.Telesign}_{countryPhoneCodeAndPhoneNumber}";
 		}
 
 		public async Task<bool> SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
@@ -65,12 +65,20 @@ namespace SMSwitchTelesign
 
 		public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
-			var isValid = await _mongoDbTokenService.Validate(id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber), token: OTP);
-			if (isValid)
+			try 
 			{
-				await _mongoDbTokenService.Consume(getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber));
+				var isValid = await _mongoDbTokenService.Validate(id: getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber), token: OTP);
+				if (isValid)
+				{
+					await _mongoDbTokenService.Consume(getId(mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber));
+				}
+				return isValid;
 			}
-			return isValid;
+			catch(Exception exception) 
+			{
+				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				return false;
+			}
 		}
 	}
 }

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MongoDbService\MongoDbService\MongoDbService.csproj" />
+    <ProjectReference Include="..\Countries\Countries.csproj" />
     <ProjectReference Include="..\SMSwitchCommon\SMSwitchCommon.csproj" />
     <ProjectReference Include="..\SMSwitchPlivo\SMSwitchPlivo.csproj" />
     <ProjectReference Include="..\SMSwitchTelesign\SMSwitchTelesign.csproj" />

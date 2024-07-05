@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HumanLanguages" Version="8.2.0" />
+    <PackageReference Include="HumanLanguages" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Twilio" Version="7.2.0" />
+    <PackageReference Include="Twilio" Version="7.2.2" />
   </ItemGroup>
 
   <ItemGroup>

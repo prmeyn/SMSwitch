@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using MongoDbService;
 using SMSwitch.Database.DTOs;
+using SMSwitchCommon;
 using SMSwitchCommon.DTOs;
 
 namespace SMSwitch.Database
@@ -8,8 +9,13 @@ namespace SMSwitch.Database
 	public sealed class SMSwitchDbService
 	{
 		private IMongoCollection<SMSwitchSession> _smSwitchSessionCollection;
-		public SMSwitchDbService(MongoService mongoService) 
+		private readonly SMSwitchInitializer _smSwitchInitializer;
+		public SMSwitchDbService(
+			MongoService mongoService,
+			SMSwitchInitializer smSwitchInitializer) 
 		{
+			_smSwitchInitializer = smSwitchInitializer;
+
 			_smSwitchSessionCollection = mongoService.Database.GetCollection<SMSwitchSession>(nameof(SMSwitchSession), new MongoCollectionSettings() { ReadConcern = ReadConcern.Majority, WriteConcern = WriteConcern.WMajority });
 			
 			// Create an index on CountryPhoneCodeAndPhoneNumber
@@ -20,10 +26,10 @@ namespace SMSwitch.Database
 
 		private FilterDefinition<SMSwitchSession> Filter(MobileNumber mobileWithCountryCode) => Builders<SMSwitchSession>.Filter.Eq(t => t.CountryPhoneCodeAndPhoneNumber, mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber);
 		private FilterDefinition<SMSwitchSession> Filter(string sessionId) => Builders<SMSwitchSession>.Filter.Eq(t => t.SessionId, sessionId);
-		internal async Task<SMSwitchSession> GetOrCreateAndGetLatestSession(MobileNumber mobileWithCountryCode, DateTimeOffset expiryTimeUTC)
+		internal async Task<SMSwitchSession> GetOrCreateAndGetLatestSession(MobileNumber mobileWithCountryCode)
 		{
 			var latestSession = await GetLatestSession(mobileWithCountryCode);
-			if (latestSession != null && latestSession.HasNotExpired())
+			if (latestSession != null)
 			{
 				return latestSession;
 			}
@@ -32,7 +38,7 @@ namespace SMSwitch.Database
 				SessionId = Guid.NewGuid().ToString(),
 				CountryPhoneCodeAndPhoneNumber = mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
 				StartTimeUTC = DateTimeOffset.UtcNow,
-				ExpiryTimeUTC = expiryTimeUTC
+				ExpiryTimeUTC = DateTimeOffset.UtcNow.AddSeconds(_smSwitchInitializer.SmsControls.SessionTimeoutInSeconds)
 			};
 
 			await _smSwitchSessionCollection.InsertOneAsync(latestSession);
@@ -52,10 +58,9 @@ namespace SMSwitch.Database
 
 			if (allRecords?.Any() ?? false)
 			{
-				var list = allRecords.ToList();
-				return list
-				.OrderByDescending(record => record.ExpiryTimeUTC)
-				.FirstOrDefault();
+				return await Task.FromResult(allRecords.ToList().Where(r => r.HasNotExpired())?
+				.OrderByDescending(record => record.ExpiryTimeUTC)?
+				.FirstOrDefault());
 			}
 			return null;
 		}

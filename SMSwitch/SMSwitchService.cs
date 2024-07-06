@@ -47,8 +47,7 @@ namespace SMSwitch
 			SMSwitchSession session = null;
 			try 
 			{
-				var expiryTimeUtc = DateTimeOffset.UtcNow.AddSeconds(_smSwitchInitializer.SmsControls.SessionTimeoutInSeconds);
-				session = await _smSwitchDbService.GetOrCreateAndGetLatestSession(mobileWithCountryCode, expiryTimeUtc);
+				session = await _smSwitchDbService.GetOrCreateAndGetLatestSession(mobileWithCountryCode);
 
 				Queue<SmsProvider> smsProvidersQueue = null;
 				if (session.SmsProvidersQueue?.Any() ?? false)

@@ -150,19 +150,22 @@ namespace Countries
 			return [];
 		}
 
-		public async Task FeedbackAsync(string countryPhoneCode, byte phoneNumberLength, CountryIsoCode countryIsoCode)
+		public async Task FeedbackAsync(string countryPhoneCode, byte phoneNumberLength, CountryIsoCode? countryIsoCode)
 		{
-			var filter = Builders<CountryInfo>.Filter.Eq(e => e.CountryCode, countryIsoCode.ToString());
-			var countryToUpdate = await _countryPhoneCodeCollection.Find(filter).FirstOrDefaultAsync();
-			if (countryToUpdate.ValidLengthsAndFormat == null)
+			if (countryIsoCode is not null)
 			{
-				countryToUpdate.ValidLengthsAndFormat = [];
-			}
-			if (countryToUpdate != null && countryToUpdate.CountryPhoneCode == countryPhoneCode && !countryToUpdate.ValidLengthsAndFormat.TryGetValue(phoneNumberLength.ToString(), out string? _))
-			{
-				countryToUpdate.ValidLengthsAndFormat.Add(phoneNumberLength.ToString(), ConvertByteToHashString(phoneNumberLength));
-				var options = new ReplaceOptions { IsUpsert = true };
-				await _countryPhoneCodeCollection.ReplaceOneAsync(filter, countryToUpdate, options);
+				var filter = Builders<CountryInfo>.Filter.Eq(e => e.CountryCode, countryIsoCode.ToString());
+				var countryToUpdate = await _countryPhoneCodeCollection.Find(filter).FirstOrDefaultAsync();
+				if (countryToUpdate.ValidLengthsAndFormat == null)
+				{
+					countryToUpdate.ValidLengthsAndFormat = [];
+				}
+				if (countryToUpdate != null && countryToUpdate.CountryPhoneCode == countryPhoneCode && !countryToUpdate.ValidLengthsAndFormat.TryGetValue(phoneNumberLength.ToString(), out string? _))
+				{
+					countryToUpdate.ValidLengthsAndFormat.Add(phoneNumberLength.ToString(), ConvertByteToHashString(phoneNumberLength));
+					var options = new ReplaceOptions { IsUpsert = true };
+					await _countryPhoneCodeCollection.ReplaceOneAsync(filter, countryToUpdate, options);
+				}
 			}
 		}
 

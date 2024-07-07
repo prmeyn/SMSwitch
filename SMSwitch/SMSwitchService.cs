@@ -1,4 +1,5 @@
-﻿using HumanLanguages;
+﻿using Countries;
+using HumanLanguages;
 using Microsoft.Extensions.Logging;
 using SMSwitch.Database;
 using SMSwitch.Database.DTOs;
@@ -21,6 +22,8 @@ namespace SMSwitch
 
 		private readonly SMSwitchDbService _smSwitchDbService;
 
+		private readonly CountryDbService _countryDbService;
+
 		private readonly ILogger<SMSwitchService> _logger;
 
 
@@ -30,6 +33,7 @@ namespace SMSwitch
 			TelesignService telesignService,
 			PlivoService plivoService,
 			SMSwitchDbService smSwitchDbService,
+			CountryDbService countryDbService,
 			ILogger<SMSwitchService> logger
 			)
 		{
@@ -38,6 +42,7 @@ namespace SMSwitch
 			_telesignService = telesignService;
 			_plivoService = plivoService;
 			_smSwitchDbService = smSwitchDbService;
+			_countryDbService = countryDbService;
 			_logger = logger;
 		}
 
@@ -139,6 +144,10 @@ namespace SMSwitch
 				{
 					session.SuccessfullyVerifiedTimestampUTC = DateTimeOffset.UtcNow;
 					await _smSwitchDbService.UpdateSession(session);
+					_ = _countryDbService.FeedbackAsync(
+						countryPhoneCode: mobileWithCountryCode.CountryPhoneCodeAsNumericString,
+						phoneNumberLength: (byte)mobileWithCountryCode.PhoneNumberAsNumericString.Length,
+						countryIsoCode: mobileWithCountryCode.CountryIsoCode);
 				}
 				return mobileNumberVerified;
 			}

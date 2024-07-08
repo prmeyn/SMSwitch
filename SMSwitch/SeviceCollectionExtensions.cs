@@ -1,11 +1,11 @@
-﻿using Countries;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SMSwitch.Common;
+using SMSwitch.Countries;
+using SMSwitch.Countries.Database;
 using SMSwitch.Database;
-using SMSwitchCommon;
-using SMSwitchPlivo;
-using SMSwitchPlivo.Database;
-using SMSwitchTelesign;
-using SMSwitchTwilio;
+using SMSwitch.Services.Plivo;
+using SMSwitch.Services.Plivo.Database;
+using SMSwitch.Services.Twilio;
 
 namespace SMSwitch
 {
@@ -22,9 +22,6 @@ namespace SMSwitch
 
 			services.AddSingleton<TwilioInitializer>();
 			services.AddScoped<TwilioService>();
-
-			services.AddSingleton<TelesignInitializer>();
-			services.AddScoped<TelesignService>();
 
 			services.AddSingleton<PlivoInitializer>();
 			services.AddSingleton<PlivoDbService>();

@@ -5,15 +5,11 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMSwitch", "SMSwitch\SMSwitch.csproj", "{8F6CD18F-59C7-46D3-BC85-83F95C4FF42B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMSwitchTwilio", "SMSwitchTwilio\SMSwitchTwilio.csproj", "{6AD7942D-31E3-4654-B002-30433F5F6CD8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMSwitchCommon", "SMSwitchCommon\SMSwitchCommon.csproj", "{06ED892E-87A8-4A91-8D42-C9D0FAAEBD18}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMSwitchTelesign", "SMSwitchTelesign\SMSwitchTelesign.csproj", "{E668E448-B6F9-4C24-9F0F-50072BF36C48}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SMSwitchPlivo", "SMSwitchPlivo\SMSwitchPlivo.csproj", "{4B7F63DB-CA89-475C-835C-295C092A703D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Countries", "Countries\Countries.csproj", "{DC7A8414-A727-4BAD-904C-9E787B142D10}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{25AAFFAA-C69B-402C-9226-8F42CDA023E8}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,26 +21,6 @@ Global
 		{8F6CD18F-59C7-46D3-BC85-83F95C4FF42B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F6CD18F-59C7-46D3-BC85-83F95C4FF42B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F6CD18F-59C7-46D3-BC85-83F95C4FF42B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AD7942D-31E3-4654-B002-30433F5F6CD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AD7942D-31E3-4654-B002-30433F5F6CD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AD7942D-31E3-4654-B002-30433F5F6CD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AD7942D-31E3-4654-B002-30433F5F6CD8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06ED892E-87A8-4A91-8D42-C9D0FAAEBD18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06ED892E-87A8-4A91-8D42-C9D0FAAEBD18}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06ED892E-87A8-4A91-8D42-C9D0FAAEBD18}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06ED892E-87A8-4A91-8D42-C9D0FAAEBD18}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E668E448-B6F9-4C24-9F0F-50072BF36C48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E668E448-B6F9-4C24-9F0F-50072BF36C48}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E668E448-B6F9-4C24-9F0F-50072BF36C48}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E668E448-B6F9-4C24-9F0F-50072BF36C48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B7F63DB-CA89-475C-835C-295C092A703D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B7F63DB-CA89-475C-835C-295C092A703D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4B7F63DB-CA89-475C-835C-295C092A703D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B7F63DB-CA89-475C-835C-295C092A703D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC7A8414-A727-4BAD-904C-9E787B142D10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC7A8414-A727-4BAD-904C-9E787B142D10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC7A8414-A727-4BAD-904C-9E787B142D10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC7A8414-A727-4BAD-904C-9E787B142D10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

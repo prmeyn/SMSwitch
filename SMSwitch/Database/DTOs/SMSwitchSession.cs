@@ -1,5 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
-using SMSwitchCommon;
+using SMSwitch.Common;
 
 namespace SMSwitch.Database.DTOs
 {

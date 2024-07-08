@@ -7,19 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EarthCountriesInfo" Version="2.1.0" />
     <PackageReference Include="HumanLanguages" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="MongoDbService" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Countries\Countries.csproj" />
-    <ProjectReference Include="..\SMSwitchCommon\SMSwitchCommon.csproj" />
-    <ProjectReference Include="..\SMSwitchPlivo\SMSwitchPlivo.csproj" />
-    <ProjectReference Include="..\SMSwitchTelesign\SMSwitchTelesign.csproj" />
-    <ProjectReference Include="..\SMSwitchTwilio\SMSwitchTwilio.csproj" />
+    <PackageReference Include="Plivo" Version="5.47.2" />
+    <PackageReference Include="Twilio" Version="7.2.2" />
   </ItemGroup>
 
 </Project>

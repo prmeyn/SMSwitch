@@ -1,8 +1,8 @@
 ﻿using MongoDB.Driver;
 using MongoDbService;
+using SMSwitch.Common;
+using SMSwitch.Common.DTOs;
 using SMSwitch.Database.DTOs;
-using SMSwitchCommon;
-using SMSwitchCommon.DTOs;
 
 namespace SMSwitch.Database
 {

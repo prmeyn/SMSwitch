@@ -1,13 +1,12 @@
-﻿using Countries;
-using HumanLanguages;
+﻿using HumanLanguages;
 using Microsoft.Extensions.Logging;
+using SMSwitch.Common;
+using SMSwitch.Common.DTOs;
+using SMSwitch.Countries.Database;
 using SMSwitch.Database;
 using SMSwitch.Database.DTOs;
-using SMSwitchCommon;
-using SMSwitchCommon.DTOs;
-using SMSwitchPlivo;
-using SMSwitchTelesign;
-using SMSwitchTwilio;
+using SMSwitch.Services.Plivo;
+using SMSwitch.Services.Twilio;
 
 namespace SMSwitch
 {
@@ -17,7 +16,6 @@ namespace SMSwitch
 		private readonly SMSwitchInitializer _smSwitchInitializer;
 
 		private readonly TwilioService _twilioService;
-		private readonly TelesignService _telesignService;
 		private readonly PlivoService _plivoService;
 
 		private readonly SMSwitchDbService _smSwitchDbService;
@@ -30,7 +28,6 @@ namespace SMSwitch
 		public SMSwitchService(
 			SMSwitchInitializer smSwitchInitializer,
 			TwilioService twilioService,
-			TelesignService telesignService,
 			PlivoService plivoService,
 			SMSwitchDbService smSwitchDbService,
 			CountryDbService countryDbService,
@@ -39,7 +36,6 @@ namespace SMSwitch
 		{
 			_smSwitchInitializer = smSwitchInitializer;
 			_twilioService = twilioService;
-			_telesignService = telesignService;
 			_plivoService = plivoService;
 			_smSwitchDbService = smSwitchDbService;
 			_countryDbService = countryDbService;
@@ -91,7 +87,6 @@ namespace SMSwitch
 					{
 						SmsProvider.Twilio => await _twilioService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
 						SmsProvider.Plivo => await _plivoService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
-						SmsProvider.Telesign => await _telesignService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
 						_ => throw new NotImplementedException(),
 					};
 
@@ -136,7 +131,6 @@ namespace SMSwitch
 				{
 					SmsProvider.Twilio => await _twilioService.VerifyOTP(mobileWithCountryCode, OTP),
 					SmsProvider.Plivo => await _plivoService.VerifyOTP(mobileWithCountryCode, OTP),
-					SmsProvider.Telesign => await _telesignService.VerifyOTP(mobileWithCountryCode, OTP),
 					_ => throw new NotImplementedException(),
 				};
 

@@ -98,7 +98,7 @@ namespace SMSwitch.Services.Twilio
             throw new NotImplementedException();
         }
 
-        public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+        public async Task<SMSwitchResponseVerifyOTP> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
         {
             bool verified = false;
             try
@@ -114,7 +114,9 @@ namespace SMSwitch.Services.Twilio
             {
 				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
             }
-            return verified;
+            return new SMSwitchResponseVerifyOTP() {
+                Verified = verified
+            };
         }
     }
 }

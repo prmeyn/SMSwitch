@@ -51,7 +51,7 @@ namespace SMSwitch.Services.Plivo
 			throw new NotImplementedException();
 		}
 
-		public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+		public async Task<SMSwitchResponseVerifyOTP> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
 			try
 			{
@@ -60,15 +60,19 @@ namespace SMSwitch.Services.Plivo
 				if (_plivoInitializer.PlivoApi.VerifySession.Get(sessionUuid).Status.ToLower() == "verified")
 				{
 					await _plivoDbService.ClearSessionUUID(mobileWithCountryCode);
-					return true;
+					return new SMSwitchResponseVerifyOTP()
+					{
+						Verified = true
+					};
 				}
-				return false;
 			}
 			catch(Exception exception)
 			{
 				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
-				return false;
 			}
+			return new SMSwitchResponseVerifyOTP(){
+				Verified = false
+			};
 		}
 	}
 }

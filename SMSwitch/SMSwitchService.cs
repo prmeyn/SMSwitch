@@ -121,7 +121,7 @@ namespace SMSwitch
 			throw new NotImplementedException();
 		}
 
-		public async Task<bool> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
+		public async Task<SMSwitchResponseVerifyOTP> VerifyOTP(MobileNumber mobileWithCountryCode, string OTP)
 		{
 			var session = await _smSwitchDbService.GetLatestSession(mobileWithCountryCode);
 
@@ -134,18 +134,25 @@ namespace SMSwitch
 					_ => throw new NotImplementedException(),
 				};
 
-				if (mobileNumberVerified)
+				if (mobileNumberVerified.Verified)
 				{
 					session.SuccessfullyVerifiedTimestampUTC = DateTimeOffset.UtcNow;
-					await _smSwitchDbService.UpdateSession(session);
 					_ = _countryDbService.FeedbackAsync(
 						countryPhoneCode: mobileWithCountryCode.CountryPhoneCodeAsNumericString,
 						phoneNumberLength: (byte)mobileWithCountryCode.PhoneNumberAsNumericString.Length,
 						countryIsoCode: mobileWithCountryCode.CountryIsoCode);
 				}
+				else
+				{
+					session.FailedAtteptsDateTimeOffset.Add(DateTimeOffset.UtcNow);
+				}
+				await _smSwitchDbService.UpdateSession(session);
 				return mobileNumberVerified;
 			}
-			return false;
+			return new SMSwitchResponseVerifyOTP() {
+				Verified = false,
+				Expired = true
+			};
 		}
 	}
 }

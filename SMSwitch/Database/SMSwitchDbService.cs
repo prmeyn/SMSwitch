@@ -58,7 +58,7 @@ namespace SMSwitch.Database
 
 			if (allRecords?.Any() ?? false)
 			{
-				return await Task.FromResult(allRecords.ToList().Where(r => r.HasNotExpired())?
+				return await Task.FromResult(allRecords.ToList().Where(r => r.HasNotExpired(_smSwitchInitializer.SmsControls.MaximumFailedAttempts))?
 				.OrderByDescending(record => record.ExpiryTimeUTC)?
 				.FirstOrDefault());
 			}

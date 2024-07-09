@@ -2,6 +2,7 @@
 {
 	public sealed class SmsControls
 	{
+		public byte MaximumFailedAttempts { get; init; }
 		public int SessionTimeoutInSeconds { get; init; }
 		public byte MaxRoundRobinAttempts { get; set; }
 		public Dictionary<string, HashSet<SmsProvider>> PriorityBasedOnCountryPhoneCode { get; set; }

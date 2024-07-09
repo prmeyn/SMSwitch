@@ -9,6 +9,7 @@ namespace SMSwitch.Common
 		{
 			var smsControlsConfig = configuration.GetSection("SMSwitchSettings:Controls");
 			SmsControls = new SmsControls() {
+				MaximumFailedAttempts = byte.TryParse(smsControlsConfig["MaximumFailedAttempts"], out byte maximumFailedAttempts) ? maximumFailedAttempts : (byte)3,
 				SessionTimeoutInSeconds = int.TryParse(smsControlsConfig["SessionTimeoutInSeconds"], out int sessionTimeoutInSeconds) ? sessionTimeoutInSeconds : 240,
 				MaxRoundRobinAttempts = byte.TryParse(smsControlsConfig["MaxRoundRobinAttempts"], out byte maxRoundRobinAttempts) ? maxRoundRobinAttempts : (byte)1,
 				PriorityBasedOnCountryPhoneCode = smsControlsConfig.GetRequiredSection("PriorityBasedOnCountryPhoneCode")

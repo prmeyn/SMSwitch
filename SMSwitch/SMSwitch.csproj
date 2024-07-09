@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+	  <PackageLicenseFile>LICENSE</PackageLicenseFile>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -18,5 +20,8 @@
     <PackageReference Include="Plivo" Version="5.47.2" />
     <PackageReference Include="Twilio" Version="7.2.2" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Include="../LICENSE" Pack="true" PackagePath="\" />
+		<None Include="../README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>

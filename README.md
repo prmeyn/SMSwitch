@@ -24,7 +24,7 @@ dotnet add package SMSwitch
 Then in your `appsettings.json` add the following sample configuration and change the values to match the details of your credentials to the various services.
 ```json
   "SMSwitchSettings": {
-    "SupportedCountriesIsoCodes": [ "DK", "IN", "FI" ],
+    "SupportedCountriesIsoCodes": [ "IN", "FI", "DK" ],
     "Controls": {
       "MaximumFailedAttempts": 4,
       "SessionTimeoutInSeconds": 240,

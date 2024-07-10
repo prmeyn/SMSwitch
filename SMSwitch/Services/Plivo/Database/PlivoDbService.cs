@@ -73,7 +73,7 @@ namespace SMSwitch.Services.Plivo.Database
 				{
 					return true;
 				}
-				else if(DateTimeOffset.UtcNow >= expiry)
+				else if (sessionInDb.Notifications.Any(n => n.channelStatus == "failed") || DateTimeOffset.UtcNow >= expiry)
 				{
 					return false;
 				}

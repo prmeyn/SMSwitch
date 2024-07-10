@@ -13,6 +13,8 @@ namespace SMSwitch
 	{
 		public static void AddSMSwitchServices(this IServiceCollection services)
 		{
+			services.AddHttpContextAccessor();
+
 			services.AddSingleton<CountryInitializer>();
 			services.AddSingleton<CountryDbService>();
 			services.AddHostedService<CountryDbService>();

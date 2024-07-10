@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SMSwitch.Common;
 using SMSwitch.Common.DTOs;
+using System;
 using Twilio.Rest.Verify.V2.Service;
 
 namespace SMSwitch.Services.Twilio
@@ -108,12 +109,22 @@ namespace SMSwitch.Services.Twilio
                     code: OTP,
                     pathServiceSid: _twilioInitializer.TwilioSettings.TwilioPrivateSettings.ServiceSid
                 );
-                verified = verification?.Valid ?? false;
+                verified = verification?.Status.Equals("approved") ?? false;
+
+                if (!verified)
+                {
+					_logger.LogInformation($"Verification Status: {verification?.Status} for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				}
             }
             catch (Exception exception)
             {
 				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
-            }
+				return new SMSwitchResponseVerifyOTP()
+				{
+					Verified = verified,
+                    Expired = true
+				};
+			}
             return new SMSwitchResponseVerifyOTP() {
                 Verified = verified
             };

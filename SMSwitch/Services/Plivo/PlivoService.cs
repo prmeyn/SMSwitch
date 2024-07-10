@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using SMSwitch.Common;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Services.Plivo.Database;
-using SMSwitch.Services.Plivo.WebHook;
 
 namespace SMSwitch.Services.Plivo
 {
@@ -29,7 +28,8 @@ namespace SMSwitch.Services.Plivo
 					app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
 					url: _plivoInitializer.NotificationUrl ,
 					method: "GET",
-					channel: "sms");
+					channel: "sms",
+					locale: preferredLanguageIsoCodeList.First().ToIsoCodeString('_'));
 
 				await _plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID);
 
@@ -52,8 +52,8 @@ namespace SMSwitch.Services.Plivo
 					IsSent = false
 				};
 			}
-			
 		}
+
 		public Task<bool> SendSMS(MobileNumber mobileWithCountryCode, string shortMessageServiceMessage)
 		{
 			throw new NotImplementedException();

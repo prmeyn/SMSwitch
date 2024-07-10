@@ -2,7 +2,6 @@
 using MongoDbService;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Services.Plivo.Database.DTOs;
-using SMSwitch.Services.Plivo.WebHook;
 
 namespace SMSwitch.Services.Plivo.Database
 {

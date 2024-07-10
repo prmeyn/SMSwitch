@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 using SMSwitch.Services.Plivo.Database;
 using SMSwitch.Services.Plivo.Database.DTOs;
 
@@ -15,6 +16,7 @@ namespace SMSwitch.Services.Plivo.WebHook
 			group.MapGet(PlivoNotificationRoute, async (
 				HttpRequest httpRequest,
 				PlivoDbService plivoDbService,
+				ILogger logger,
 				byte AttemptSequence,
 				string AttemptUUID,
 				string Channel,
@@ -25,8 +27,16 @@ namespace SMSwitch.Services.Plivo.WebHook
 				string SessionStatus,
 				string SessionUUID) =>
 			{
-				await  plivoDbService.UpdateSessionUUID(Recipient, SessionUUID, new PlivoNotification(AttemptSequence, AttemptUUID, Channel, ChannelErrorCode, ChannelStatus, RequestTime, SessionStatus, DateTimeOffset.UtcNow));
-				return Results.Ok();
+				try 
+				{
+					await plivoDbService.UpdateSessionUUID(Recipient, SessionUUID, new PlivoNotification(AttemptSequence, AttemptUUID, Channel, ChannelErrorCode, ChannelStatus, RequestTime, SessionStatus, DateTimeOffset.UtcNow));
+					return Results.Ok();
+				} 
+				catch (Exception ex) 
+				{
+					logger.LogCritical(ex, $"Recipient: {Recipient}  SessionUUID: {SessionUUID}");
+				}
+				return Results.Problem();
 			})
 			.Produces(StatusCodes.Status200OK);
 

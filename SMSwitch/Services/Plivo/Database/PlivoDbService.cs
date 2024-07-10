@@ -63,7 +63,7 @@ namespace SMSwitch.Services.Plivo.Database
 			await _plivoSessionCollection.DeleteManyAsync(filter);
 		}
 
-		internal async Task<bool> KeepCheckingTheDatabaseIfSentEvery3seconds(string sessionUUID, DateTimeOffset expiry)
+		internal async Task<bool> KeepCheckingTheDatabaseIfSentEvery2seconds(string sessionUUID, DateTimeOffset expiry)
 		{
 			var filter = getFilter(sessionUUID);
 			var sessionInDb = await _plivoSessionCollection.Find(filter).FirstOrDefaultAsync();
@@ -79,8 +79,8 @@ namespace SMSwitch.Services.Plivo.Database
 				}
 				else
 				{
-					await Task.Delay(TimeSpan.FromSeconds(3));
-					return await KeepCheckingTheDatabaseIfSentEvery3seconds(sessionUUID, expiry);
+					await Task.Delay(TimeSpan.FromSeconds(2));
+					return await KeepCheckingTheDatabaseIfSentEvery2seconds(sessionUUID, expiry);
 				}
 			}
 			return false;

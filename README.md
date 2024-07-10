@@ -45,6 +45,7 @@ Then in your `appsettings.json` add the following sample configuration and chang
       "RegisteredSenderPhoneNumber": "MovedToSecret"
     },
     "Plivo": {
+      "WebHookBaseUri": "https://your-server-base-url",
       "AuthId": "MovedToSecret",
       "AuthToken": "MovedToSecret",
       "AppUuid": "MovedToSecret"

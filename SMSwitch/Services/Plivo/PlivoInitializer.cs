@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Plivo;
 using SMSwitch.Common;
+using SMSwitch.Services.Plivo.WebHook;
 
 namespace SMSwitch.Services.Plivo
 {
@@ -25,6 +26,7 @@ namespace SMSwitch.Services.Plivo
 					OtpLength = SMSwitchGeneralSettings.OtpLength,
 					PlivoPrivateSettings = new PlivoPrivateSettings()
 					{
+						WebHookBaseUri = new Uri(plivoConfig["WebHookBaseUri"]),
 						AuthId = plivoConfig["AuthId"],
 						AuthToken = plivoConfig["AuthToken"],
 						AppUuid = plivoConfig["AppUuid"]
@@ -39,5 +41,7 @@ namespace SMSwitch.Services.Plivo
 			}
 			
 		}
+
+		internal string NotificationUrl => new Uri(PlivoSettings.PlivoPrivateSettings.WebHookBaseUri, $"{PlivoNotificationEndpoint.PlivoNotificationRouteGroup}/{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
 	}
 }

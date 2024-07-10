@@ -2,6 +2,7 @@
 using MongoDbService;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Services.Plivo.Database.DTOs;
+using SMSwitch.Services.Plivo.WebHook;
 
 namespace SMSwitch.Services.Plivo.Database
 {
@@ -21,6 +22,29 @@ namespace SMSwitch.Services.Plivo.Database
 			await _plivoSessionCollection.ReplaceOneAsync(filter, new PlivoSession() { CountryPhoneCodeAndPhoneNumber = mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber, SessionUUID = sessionUUID, TimeStamp = DateTimeOffset.UtcNow }, options);
 		}
 
+		internal async Task UpdateSessionUUID(string mobileNumberCountryPhoneCodeAndPhoneNumber, string sessionUUID, PlivoNotification plivoNotification)
+		{
+			var filter = getFilter(mobileNumberCountryPhoneCodeAndPhoneNumber, sessionUUID);
+			var sessionInDb = await _plivoSessionCollection.Find(filter).FirstOrDefaultAsync();
+			if (sessionInDb is not null)
+			{
+				sessionInDb.Notifications.Add(plivoNotification);
+				var options = new ReplaceOptions { IsUpsert = true };
+				await _plivoSessionCollection.ReplaceOneAsync(filter, sessionInDb, options);
+			}
+			
+		}
+
+		private FilterDefinition<PlivoSession> getFilter(string mobileNumberCountryPhoneCodeAndPhoneNumber, string sessionUUID)
+		{
+			return Builders<PlivoSession>.Filter.Eq(t => t.CountryPhoneCodeAndPhoneNumber, mobileNumberCountryPhoneCodeAndPhoneNumber) & getFilter(sessionUUID);
+		}
+
+		private FilterDefinition<PlivoSession> getFilter(string sessionUUID)
+		{
+			return Builders<PlivoSession>.Filter.Eq(t => t.SessionUUID, sessionUUID);
+		}
+
 		private FilterDefinition<PlivoSession> getFilter(MobileNumber mobileWithCountryCode)
 		{
 			var idAsString = mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber;
@@ -38,6 +62,29 @@ namespace SMSwitch.Services.Plivo.Database
 		{
 			var filter = getFilter(mobileWithCountryCode);
 			await _plivoSessionCollection.DeleteManyAsync(filter);
+		}
+
+		internal async Task<bool> KeepCheckingTheDatabaseIfSentEvery3seconds(string sessionUUID, DateTimeOffset expiry)
+		{
+			var filter = getFilter(sessionUUID);
+			var sessionInDb = await _plivoSessionCollection.Find(filter).FirstOrDefaultAsync();
+			if (sessionInDb is not null)
+			{
+				if (sessionInDb.Notifications.Any(n => n.channelStatus == "delivered"))
+				{
+					return true;
+				}
+				else if(DateTimeOffset.UtcNow >= expiry)
+				{
+					return false;
+				}
+				else
+				{
+					await Task.Delay(TimeSpan.FromSeconds(3));
+					return await KeepCheckingTheDatabaseIfSentEvery3seconds(sessionUUID, expiry);
+				}
+			}
+			return false;
 		}
 	}
 }

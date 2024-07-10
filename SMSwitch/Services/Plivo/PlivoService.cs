@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SMSwitch.Common;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Services.Plivo.Database;
+using SMSwitch.Services.Plivo.WebHook;
 
 namespace SMSwitch.Services.Plivo
 {
@@ -26,13 +27,20 @@ namespace SMSwitch.Services.Plivo
 				var verifySessionResponse = _plivoInitializer.PlivoApi.VerifySession.Create(
 					recipient: mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
 					app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
+					url: _plivoInitializer.NotificationUrl ,
+					method: "GET",
 					channel: "sms");
 
 				await _plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID);
 
+				bool isSent = false;
+				if (verifySessionResponse.StatusCode.ToString().StartsWith("2"))
+				{
+					isSent = await _plivoDbService.KeepCheckingTheDatabaseIfSentEvery3seconds(verifySessionResponse.SessionUUID, expiry: DateTimeOffset.UtcNow.AddSeconds(60));
+				}
 				return new SMSwitchResponseSendOTP()
 				{
-					IsSent = verifySessionResponse.StatusCode.ToString().StartsWith("2"),
+					IsSent = isSent,
 					OtpLength = _plivoInitializer.PlivoSettings.OtpLength
 				};
 			}

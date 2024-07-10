@@ -42,6 +42,6 @@ namespace SMSwitch.Services.Plivo
 			
 		}
 
-		internal string NotificationUrl => new Uri(PlivoSettings.PlivoPrivateSettings.WebHookBaseUri, $"{PlivoNotificationEndpoint.PlivoNotificationRouteGroup}/{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
+		internal string NotificationUrl => new Uri(PlivoSettings.PlivoPrivateSettings.WebHookBaseUri, $"{PlivoNotificationEndpoint.PlivoNotificationRouteGroup}{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
 	}
 }

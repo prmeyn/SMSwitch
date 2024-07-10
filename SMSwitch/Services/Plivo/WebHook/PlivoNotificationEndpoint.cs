@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using SMSwitch.Services.Plivo.Database;
@@ -14,18 +15,18 @@ namespace SMSwitch.Services.Plivo.WebHook
 		public static RouteGroupBuilder GroupPlivoNotificationApisV1(this RouteGroupBuilder group)
 		{
 			group.MapGet(PlivoNotificationRoute, async (
-				HttpRequest httpRequest,
-				PlivoDbService plivoDbService,
-				ILogger logger,
-				byte AttemptSequence,
-				string AttemptUUID,
-				string Channel,
-				string ChannelErrorCode,
-				string ChannelStatus,
-				string Recipient,
-				DateTime RequestTime,
-				string SessionStatus,
-				string SessionUUID) =>
+				[FromServices] HttpRequest httpRequest,
+				[FromServices] PlivoDbService plivoDbService,
+				[FromServices] ILogger logger,
+				[FromQuery] byte AttemptSequence,
+				[FromQuery] string AttemptUUID,
+				[FromQuery] string Channel,
+				[FromQuery] string ChannelErrorCode,
+				[FromQuery] string ChannelStatus,
+				[FromQuery] string Recipient,
+				[FromQuery] DateTime RequestTime,
+				[FromQuery] string SessionStatus,
+				[FromQuery] string SessionUUID) =>
 			{
 				try 
 				{

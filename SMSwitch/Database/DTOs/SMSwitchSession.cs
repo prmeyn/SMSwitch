@@ -15,7 +15,7 @@ namespace SMSwitch.Database.DTOs
 		public List<AttemptDetailsSendOTP> SentAttempts { get; set; } = [];
 		public List<DateTimeOffset> FailedVerificationAttemptsDateTimeOffset { get; set; } = [];
 		internal bool HasNotExpired(byte maximumFailedAttemptsToVerify) => 
-			FailedVerificationAttemptsDateTimeOffset.Count() < maximumFailedAttemptsToVerify &&
+			FailedVerificationAttemptsDateTimeOffset.Count() <= maximumFailedAttemptsToVerify &&
 			SuccessfullyVerifiedTimestampUTC == null &&
 			DateTimeOffset.UtcNow < ExpiryTimeUTC;
 	}

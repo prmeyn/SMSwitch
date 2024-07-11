@@ -90,6 +90,7 @@ namespace SMSwitch
 						_ => throw new NotImplementedException(),
 					};
 
+					session.SentAttempts.Add(new AttemptDetailsSendOTP(DateTimeOffset.UtcNow, smsProvidersQueue.Peek(), responseSendOTP.IsSent));
 					if (responseSendOTP.IsSent)
 					{
 						break;
@@ -105,12 +106,12 @@ namespace SMSwitch
 
 				if (responseSendOTP == null || !responseSendOTP.IsSent)
 				{
-					_logger.LogCritical($"Unable to send OTP to {mobileWithCountryCode} with SessionId{session?.SessionId}");
+					_logger.LogCritical($"Unable to send OTP to {mobileWithCountryCode} with SessionId: {session?.SessionId}");
 				}
 			}
 			catch ( Exception exception) 
 			{
-				_logger.LogCritical(exception, $"Unable to send OTP to {mobileWithCountryCode} with SessionId{session?.SessionId}");
+				_logger.LogCritical(exception, $"Unable to send OTP to {mobileWithCountryCode} with SessionId: {session?.SessionId}");
 			}
 			
 			return responseSendOTP ?? new SMSwitchResponseSendOTP() { IsSent = false }; 
@@ -144,7 +145,7 @@ namespace SMSwitch
 				}
 				else
 				{
-					session.FailedAtteptsDateTimeOffset.Add(DateTimeOffset.UtcNow);
+					session.FailedVerificationAttemptsDateTimeOffset.Add(DateTimeOffset.UtcNow);
 				}
 				await _smSwitchDbService.UpdateSession(session);
 				return mobileNumberVerified;

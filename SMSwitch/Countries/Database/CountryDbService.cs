@@ -11,9 +11,7 @@ namespace SMSwitch.Countries.Database
 	public sealed class CountryDbService : IHostedService
     {
         private readonly ILogger<CountryDbService> _logger;
-        IMongoDatabase _database;
         private IMongoCollection<CountryInfo> _countryPhoneCodeCollection;
-
         private CountryInitializer _countryInitializer;
 
 

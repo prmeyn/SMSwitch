@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Hosting;
+using MongoDB.Driver;
 using MongoDbService;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Services.Plivo.Database.DTOs;
@@ -8,10 +9,11 @@ namespace SMSwitch.Services.Plivo.Database
 	public sealed class PlivoDbService
 	{
 		private IMongoCollection<PlivoSession> _plivoSessionCollection;
-
-		public PlivoDbService(MongoService mongoService)
+		private IHostingEnvironment _hostingEnvironment;
+		public PlivoDbService(MongoService mongoService, IHostingEnvironment hostingEnvironment)
 		{
 			_plivoSessionCollection = mongoService.Database.GetCollection<PlivoSession>(nameof(PlivoSession), new MongoCollectionSettings() { ReadConcern = ReadConcern.Majority, WriteConcern = WriteConcern.WMajority });
+			_hostingEnvironment = hostingEnvironment;
 		}
 
 		internal async Task SetLatestSessionUUID(MobileNumber mobileWithCountryCode, string sessionUUID)
@@ -64,6 +66,10 @@ namespace SMSwitch.Services.Plivo.Database
 
 		internal async Task<bool> KeepCheckingTheDatabaseIfSentEvery2seconds(string sessionUUID, DateTimeOffset expiry)
 		{
+			if (!_hostingEnvironment.IsProduction())
+			{
+				return true;
+			}
 			var filter = getFilter(sessionUUID);
 			var sessionInDb = await _plivoSessionCollection.Find(filter).FirstOrDefaultAsync();
 			if (sessionInDb is not null)

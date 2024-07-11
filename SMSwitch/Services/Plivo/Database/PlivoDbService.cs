@@ -31,7 +31,6 @@ namespace SMSwitch.Services.Plivo.Database
 				var options = new ReplaceOptions { IsUpsert = true };
 				await _plivoSessionCollection.ReplaceOneAsync(filter, sessionInDb, options);
 			}
-			
 		}
 
 		private FilterDefinition<PlivoSession> getFilter(string mobileNumberCountryPhoneCodeAndPhoneNumber, string sessionUUID)

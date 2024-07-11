@@ -26,7 +26,7 @@ Then in your `appsettings.json` add the following sample configuration and chang
   "SMSwitchSettings": {
     "SupportedCountriesIsoCodes": [ "IN", "FI", "DK" ],
     "Controls": {
-      "MaximumFailedAttempts": 4,
+      "MaximumFailedAttemptsToVerify": 4,
       "SessionTimeoutInSeconds": 240,
       "MaxRoundRobinAttempts": 2,
       "PriorityBasedOnCountryPhoneCode": {

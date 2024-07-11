@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using SMSwitch.Common;
 using SMSwitch.Common.DTOs;
-using System;
 using Twilio.Rest.Verify.V2.Service;
 
 namespace SMSwitch.Services.Twilio
@@ -21,8 +20,9 @@ namespace SMSwitch.Services.Twilio
             
         }
 
-        private HashSet<LanguageIsoCode> _supportedLanguageIsoCodesForVerifyDefaultTemplate => new() //https://www.twilio.com/docs/verify/supported-languages#verify-default-template
-        {
+        private HashSet<LanguageIsoCode> _supportedLanguageIsoCodesForVerifyDefaultTemplate =>
+		//https://www.twilio.com/docs/verify/supported-languages#verify-default-template
+		[
 			HumanHelper.CreateLanguageIsoCode("af"),
             HumanHelper.CreateLanguageIsoCode("ar"),
             HumanHelper.CreateLanguageIsoCode("ca"),
@@ -65,7 +65,7 @@ namespace SMSwitch.Services.Twilio
             HumanHelper.CreateLanguageIsoCode("pt-BR"),
             HumanHelper.CreateLanguageIsoCode("zh-CN"),
             HumanHelper.CreateLanguageIsoCode("zh-HK")
-		};
+		];
 
 		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, HashSet<LanguageIsoCode> preferredLanguageIsoCodeList, UserAgent userAgent)
         {
@@ -109,7 +109,7 @@ namespace SMSwitch.Services.Twilio
                     code: OTP,
                     pathServiceSid: _twilioInitializer.TwilioSettings.TwilioPrivateSettings.ServiceSid
                 );
-                verified = verification?.Status.Equals("approved") ?? false;
+                verified = verification?.Status?.ToLower()?.Equals("approved") ?? false;
 
                 if (!verified)
                 {
@@ -118,7 +118,7 @@ namespace SMSwitch.Services.Twilio
             }
             catch (Exception exception)
             {
-				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				_logger.LogCritical(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
 				return new SMSwitchResponseVerifyOTP()
 				{
 					Verified = verified,

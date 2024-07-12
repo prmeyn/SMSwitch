@@ -23,7 +23,7 @@ namespace SMSwitch.Countries.Database
             _countryInitializer = countryInitializer; ;
         }
 
-        public async Task LoadCollectionFromCodeBase()
+        private async Task LoadCollectionFromCodeBase()
         {
             if (!(_countryPhoneCodeCollection.EstimatedDocumentCount() > 0))
             {
@@ -145,7 +145,8 @@ namespace SMSwitch.Countries.Database
             {
                 return allCountries.ToList();
             }
-            return [];
+            await LoadCollectionFromCodeBase();
+            return await GetAllCountriesFromDb();
         }
 
         public async Task FeedbackAsync(string countryPhoneCode, byte phoneNumberLength, CountryIsoCode? countryIsoCode)

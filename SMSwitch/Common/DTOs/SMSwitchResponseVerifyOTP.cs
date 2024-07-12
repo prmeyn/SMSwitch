@@ -3,6 +3,6 @@
 	public sealed class SMSwitchResponseVerifyOTP
 	{
 		public bool Verified { get; init; }
-		public bool Expired { get; init; } = false;
+		public bool Expired { get; set; } = false;
 	}
 }

@@ -148,6 +148,7 @@ namespace SMSwitch
 					session.FailedVerificationAttemptsDateTimeOffset.Add(DateTimeOffset.UtcNow);
 				}
 				await _smSwitchDbService.UpdateSession(session);
+				mobileNumberVerified.Expired = !session.HasNotExpired(_smSwitchInitializer.SmsControls.MaximumFailedAttemptsToVerify);
 				return mobileNumberVerified;
 			}
 			return new SMSwitchResponseVerifyOTP() {

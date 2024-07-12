@@ -151,6 +151,15 @@ namespace SMSwitch
 				mobileNumberVerified.Expired = !session.HasNotExpired(_smSwitchInitializer.SmsControls.MaximumFailedAttemptsToVerify);
 				return mobileNumberVerified;
 			}
+			if (session is not null)
+			{
+				session.FailedVerificationAttemptsDateTimeOffset.Add(DateTimeOffset.UtcNow);
+				await _smSwitchDbService.UpdateSession(session);
+			}
+			else 
+			{
+				_logger.LogInformation($"Session not found: Unable to verify OTP for {mobileWithCountryCode} with OTP: {OTP}");
+			}
 			return new SMSwitchResponseVerifyOTP() {
 				Verified = false,
 				Expired = true

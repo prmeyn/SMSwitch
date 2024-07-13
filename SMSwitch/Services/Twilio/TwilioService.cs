@@ -19,57 +19,63 @@ namespace SMSwitch.Services.Twilio
             _twilioInitializer = twilioInitializer;
             
         }
+		/// <summary>
+		/// //https://www.twilio.com/docs/verify/supported-languages#verify-default-template
+		/// These are the supported language ISO codes as of 13-July-2024
+		/// </summary>
+		private static HashSet<string> _supportedLanguageIsoCodeStringsForVerifyDefaultTemplate => 
+            ["af",
+			"ar",
+			"ca",
+			"zh",
+			"hr",
+			"cs",
+			"da",
+			"nl",
+			"en",
+			"et",
+			"fi",
+			"fr",
+			"de",
+			"el",
+			"he",
+			"hi",
+			"hu",
+			"id",
+			"it",
+			"ja",
+			"kn",
+			"ko",
+			"lt",
+			"ms",
+			"mr",
+			"nb",
+			"pl",
+			"pt",
+			"ro",
+			"ru",
+			"sk",
+			"es",
+			"sv",
+			"tl",
+			"te",
+			"th",
+			"tr",
+			"uk",
+			"vi",
+			"pt-BR",
+			"zh-CN",
+			"zh-HK"];
 
-        private HashSet<LanguageIsoCode> _supportedLanguageIsoCodesForVerifyDefaultTemplate =>
-		//https://www.twilio.com/docs/verify/supported-languages#verify-default-template
-		[
-			HumanHelper.CreateLanguageIsoCode("af"),
-            HumanHelper.CreateLanguageIsoCode("ar"),
-            HumanHelper.CreateLanguageIsoCode("ca"),
-            HumanHelper.CreateLanguageIsoCode("zh"),
-            HumanHelper.CreateLanguageIsoCode("hr"),
-            HumanHelper.CreateLanguageIsoCode("cs"),
-            HumanHelper.CreateLanguageIsoCode("da"),
-            HumanHelper.CreateLanguageIsoCode("nl"),
-            HumanHelper.CreateLanguageIsoCode("en"),
-            HumanHelper.CreateLanguageIsoCode("et"),
-            HumanHelper.CreateLanguageIsoCode("fi"),
-            HumanHelper.CreateLanguageIsoCode("fr"),
-            HumanHelper.CreateLanguageIsoCode("de"),
-            HumanHelper.CreateLanguageIsoCode("el"),
-            HumanHelper.CreateLanguageIsoCode("he"),
-            HumanHelper.CreateLanguageIsoCode("hi"),
-            HumanHelper.CreateLanguageIsoCode("hu"),
-            HumanHelper.CreateLanguageIsoCode("id"),
-            HumanHelper.CreateLanguageIsoCode("it"),
-            HumanHelper.CreateLanguageIsoCode("ja"),
-            HumanHelper.CreateLanguageIsoCode("kn"),
-            HumanHelper.CreateLanguageIsoCode("ko"),
-            HumanHelper.CreateLanguageIsoCode("lt"),
-            HumanHelper.CreateLanguageIsoCode("ms"),
-            HumanHelper.CreateLanguageIsoCode("mr"),
-            HumanHelper.CreateLanguageIsoCode("nb"),
-            HumanHelper.CreateLanguageIsoCode("pl"),
-            HumanHelper.CreateLanguageIsoCode("pt"),
-            HumanHelper.CreateLanguageIsoCode("ro"),
-            HumanHelper.CreateLanguageIsoCode("ru"),
-            HumanHelper.CreateLanguageIsoCode("sk"),
-            HumanHelper.CreateLanguageIsoCode("es"),
-            HumanHelper.CreateLanguageIsoCode("sv"),
-            HumanHelper.CreateLanguageIsoCode("tl"),
-            HumanHelper.CreateLanguageIsoCode("te"),
-            HumanHelper.CreateLanguageIsoCode("th"),
-            HumanHelper.CreateLanguageIsoCode("tr"),
-            HumanHelper.CreateLanguageIsoCode("uk"),
-            HumanHelper.CreateLanguageIsoCode("vi"),
-            HumanHelper.CreateLanguageIsoCode("pt-BR"),
-            HumanHelper.CreateLanguageIsoCode("zh-CN"),
-            HumanHelper.CreateLanguageIsoCode("zh-HK")
-		];
+        private static HashSet<LanguageIsoCode> _supportedLanguageIsoCodesForVerifyDefaultTemplate => _supportedLanguageIsoCodeStringsForVerifyDefaultTemplate.Select(isoCodeString => HumanHelper.CreateLanguageIsoCode(isoCodeString)).ToHashSet();
 
 		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, HashSet<LanguageIsoCode> preferredLanguageIsoCodeList, UserAgent userAgent)
         {
-            var locale = preferredLanguageIsoCodeList.FirstOrDefault(l => _supportedLanguageIsoCodesForVerifyDefaultTemplate.Contains(l))?.ToIsoCodeString() ?? "en";
+            var locale = preferredLanguageIsoCodeList.FirstOrDefault(l => _supportedLanguageIsoCodesForVerifyDefaultTemplate.Contains(l))?.ToIsoCodeString()
+				??
+				preferredLanguageIsoCodeList.FirstOrDefault(l => _supportedLanguageIsoCodesForVerifyDefaultTemplate.Select(isoCode => isoCode.LanguageId).Contains(l.LanguageId))?.ToIsoCodeString()
+				??
+				"en";
             try
             {
                 var verification = await VerificationResource.CreateAsync(

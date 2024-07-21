@@ -11,11 +11,14 @@ namespace SMSwitch.Services.Plivo
 	{
 		internal readonly PlivoSettings PlivoSettings;
 		internal readonly PlivoApi PlivoApi;
+		private readonly SettingsService _settingsService;
 
 		public PlivoInitializer(
 			IConfiguration configuration,
+			SettingsService settingsService,
 			ILogger<PlivoInitializer> logger): base(configuration)
 		{
+			_settingsService = settingsService;
 			try
 			{
 				var plivoConfig = SMSwitchSettings.GetSection(SmsProvider.Plivo.ToString());
@@ -42,6 +45,6 @@ namespace SMSwitch.Services.Plivo
 			
 		}
 
-		internal string NotificationUrl => new Uri(SettingsService.BaseUri, $"{PlivoNotificationEndpoint.PlivoNotificationRouteGroup}{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
+		internal string NotificationUrl => new Uri(_settingsService.BaseUri, $"{PlivoNotificationEndpoint.PlivoNotificationRouteGroup}{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
 	}
 }

@@ -1,7 +1,8 @@
 ﻿# SMSwitch(https://www.nuget.org/packages/SMSwitch)
 
-**SMSwitch** is an open-source C# class library that provides a wrapper around existing services that are used to verify Mobile numbers and send messages. The service stores information in a MongoDb database that you configure using the package [MongoDbService](https://www.nuget.org/packages/MongoDbService) 
-
+**SMSwitch** is an open-source C# class library that provides a wrapper around existing services that are used to verify Mobile numbers and send messages.
+The service stores information in a MongoDb database that you configure using the package [MongoDbService](https://www.nuget.org/packages/MongoDbService) 
+In order to know the Base Url and other common settings the following package is used [uSignIn.CommonSettings](https://www.nuget.org/packages/uSignIn.CommonSettings) 
 ## Features
 
 - Covers Twilio, Plivo (possible to cover more if needed)
@@ -45,7 +46,6 @@ Then in your `appsettings.json` add the following sample configuration and chang
       "RegisteredSenderPhoneNumber": "MovedToSecret"
     },
     "Plivo": {
-      "WebHookBaseUri": "https://your-server-base-url",
       "AuthId": "MovedToSecret",
       "AuthToken": "MovedToSecret",
       "AppUuid": "MovedToSecret"

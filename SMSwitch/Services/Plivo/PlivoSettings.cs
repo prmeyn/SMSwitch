@@ -8,7 +8,6 @@ namespace SMSwitch.Services.Plivo
 	}
 	public sealed class PlivoPrivateSettings
 	{
-		public required Uri WebHookBaseUri { get; init; }
 		public required string AuthId { get; init; }
 		public required string AuthToken { get; init; }
 		public required string AppUuid { get; init; }

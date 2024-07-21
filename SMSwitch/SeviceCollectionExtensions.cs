@@ -6,6 +6,7 @@ using SMSwitch.Database;
 using SMSwitch.Services.Plivo;
 using SMSwitch.Services.Plivo.Database;
 using SMSwitch.Services.Twilio;
+using uSignIn.CommonSettings.Settings;
 
 namespace SMSwitch
 {
@@ -13,6 +14,7 @@ namespace SMSwitch
 	{
 		public static void AddSMSwitchServices(this IServiceCollection services)
 		{
+			services.AddSingleton<SettingsService>();
 			services.AddSingleton<CountryInitializer>();
 			services.AddSingleton<CountryDbService>();
 			services.AddHostedService<CountryDbService>();

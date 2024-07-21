@@ -23,13 +23,17 @@ namespace SMSwitch.Services.Plivo
 		{
 			try 
 			{
+				var preferredLocale = preferredLanguageIsoCodeList.First().ToIsoCodeString('_');
+
+				_logger.LogInformation($"Trying to send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} in {preferredLocale}");
+
 				var verifySessionResponse = _plivoInitializer.PlivoApi.VerifySession.Create(
 					recipient: mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,
 					app_uuid: _plivoInitializer.PlivoSettings.PlivoPrivateSettings.AppUuid,
 					url: _plivoInitializer.NotificationUrl ,
 					method: "GET",
 					channel: "sms",
-					locale: preferredLanguageIsoCodeList.First().ToIsoCodeString('_'));
+					locale: preferredLocale);
 
 				await _plivoDbService.SetLatestSessionUUID(mobileWithCountryCode, verifySessionResponse.SessionUUID);
 

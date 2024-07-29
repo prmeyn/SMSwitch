@@ -82,7 +82,10 @@ namespace SMSwitch
 
 				while (smsProvidersQueue.Count > 0)
 				{
-
+					if (session.SentAttempts?.Any() ?? false)
+					{
+						smsProvidersQueue.Dequeue();
+					}
 					responseSendOTP = smsProvidersQueue.Peek() switch
 					{
 						SmsProvider.Twilio => await _twilioService.SendOTP(mobileWithCountryCode, preferredLanguageIsoCodeList, userAgent),
@@ -94,10 +97,6 @@ namespace SMSwitch
 					if (responseSendOTP.IsSent)
 					{
 						break;
-					}
-					else
-					{
-						smsProvidersQueue.Dequeue();
 					}
 				}
 

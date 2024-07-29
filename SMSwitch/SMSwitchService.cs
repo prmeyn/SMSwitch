@@ -1,5 +1,6 @@
 ﻿using HumanLanguages;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SMSwitch.Common;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Countries.Database;
@@ -85,6 +86,10 @@ namespace SMSwitch
 					if (session.SentAttempts?.Any() ?? false)
 					{
 						smsProvidersQueue.Dequeue();
+						if (smsProvidersQueue.IsNullOrEmpty())
+						{
+							break;
+						}
 					}
 					responseSendOTP = smsProvidersQueue.Peek() switch
 					{

@@ -19,13 +19,25 @@ namespace SMSwitch.Services.Plivo
 			_plivoDbService = plivoDbService;
 		}
 
+		/// <summary>
+		/// Plivo support said we need to contact them to add more translations of their SMS temeplate in different languages
+		/// I contacted them and added da for Danish
+		/// </summary>
+		private static HashSet<string> _supportedLanguageIsoCodeStringsForVerifyDefaultTemplate =>
+			["en",
+			"da"];
+		private static HashSet<LanguageIsoCode> _supportedLanguageIsoCodesForVerifyDefaultTemplate => _supportedLanguageIsoCodeStringsForVerifyDefaultTemplate.Select(isoCodeString => HumanHelper.CreateLanguageIsoCode(isoCodeString)).ToHashSet();
+
+
 		public async Task<SMSwitchResponseSendOTP> SendOTP(MobileNumber mobileWithCountryCode, HashSet<LanguageIsoCode> preferredLanguageIsoCodeList, UserAgent userAgent)
 		{
 			try 
 			{
-				var preferredLocale = preferredLanguageIsoCodeList.First().ToIsoCodeString('_');
-
-				_logger.LogInformation($"Trying to send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} in {preferredLocale}");
+				var preferredLocale = preferredLanguageIsoCodeList.FirstOrDefault(l => _supportedLanguageIsoCodesForVerifyDefaultTemplate.Contains(l))?.ToIsoCodeString()
+				??
+				preferredLanguageIsoCodeList.FirstOrDefault(l => _supportedLanguageIsoCodesForVerifyDefaultTemplate.Select(isoCode => isoCode.LanguageId).Contains(l.LanguageId))?.ToIsoCodeString()
+				??
+				"en";
 
 				var verifySessionResponse = _plivoInitializer.PlivoApi.VerifySession.Create(
 					recipient: mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber,

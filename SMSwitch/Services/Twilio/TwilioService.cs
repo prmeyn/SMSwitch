@@ -93,7 +93,7 @@ namespace SMSwitch.Services.Twilio
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, $"Could not send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber} in {locale}");
+                _logger.LogError(exception, "Could not send OTP to +{MobileNumber} in {locale}", mobileWithCountryCode?.CountryPhoneCodeAndPhoneNumber, locale);
                 return new SMSwitchResponseSendOTP() {
                     IsSent = false
                 };
@@ -119,12 +119,12 @@ namespace SMSwitch.Services.Twilio
 
                 if (!verified)
                 {
-					_logger.LogInformation($"Verification Status: {verification?.Status} for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+					_logger.LogInformation("Verification Status: {Status} for +{MobileNumber}", verification?.Status, mobileWithCountryCode?.CountryPhoneCodeAndPhoneNumber);
 				}
             }
             catch (Exception exception)
             {
-				_logger.LogCritical(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				_logger.LogCritical(exception, "Could not verify OTP for +{MobileNumber}", mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber);
 				return new SMSwitchResponseVerifyOTP()
 				{
 					Verified = verified,

@@ -1,6 +1,5 @@
 ﻿using HumanLanguages;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using SMSwitch.Common;
 using SMSwitch.Common.DTOs;
 using SMSwitch.Countries.Database;
@@ -81,12 +80,12 @@ namespace SMSwitch
 					};
 				}
 
-				while (smsProvidersQueue.Count > 0)
+				while (smsProvidersQueue.Any())
 				{
 					if (session.SentAttempts?.Any() ?? false)
 					{
 						smsProvidersQueue.Dequeue();
-						if (smsProvidersQueue.IsNullOrEmpty())
+						if (!smsProvidersQueue.Any())
 						{
 							break;
 						}
@@ -110,12 +109,12 @@ namespace SMSwitch
 
 				if (responseSendOTP == null || !responseSendOTP.IsSent)
 				{
-					_logger.LogCritical($"Unable to send OTP to {mobileWithCountryCode} with SessionId: {session?.SessionId}");
+					_logger.LogCritical("Unable to send OTP to {PhoneNumber} with SessionId: {SessionId}", mobileWithCountryCode?.CountryPhoneCodeAndPhoneNumber, session?.SessionId);
 				}
 			}
-			catch ( Exception exception) 
+			catch (Exception exception) 
 			{
-				_logger.LogCritical(exception, $"Unable to send OTP to {mobileWithCountryCode} with SessionId: {session?.SessionId}");
+				_logger.LogCritical(exception, "Unable to send OTP to {PhoneNumber} with SessionId: {SessionId}", mobileWithCountryCode?.CountryPhoneCodeAndPhoneNumber, session?.SessionId);
 			}
 			
 			return responseSendOTP ?? new SMSwitchResponseSendOTP() { IsSent = false }; 
@@ -162,7 +161,7 @@ namespace SMSwitch
 			}
 			else 
 			{
-				_logger.LogInformation($"Session not found: Unable to verify OTP for {mobileWithCountryCode} with OTP: {OTP}");
+				_logger.LogInformation("Session not found: Unable to verify OTP for {PhoneNumber} with OTP: {OTP}", mobileWithCountryCode?.CountryPhoneCodeAndPhoneNumber, OTP);
 			}
 			return new SMSwitchResponseVerifyOTP() {
 				Verified = false,

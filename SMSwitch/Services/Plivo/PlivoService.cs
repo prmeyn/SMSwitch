@@ -62,7 +62,7 @@ namespace SMSwitch.Services.Plivo
 			}
 			catch(Exception exception)
 			{
-				_logger.LogError(exception, $"Could not send OTP to +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				_logger.LogError(exception, "Could not send OTP to +{MobileNumber}", mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber);
 				return new SMSwitchResponseSendOTP()
 				{
 					IsSent = false
@@ -92,7 +92,7 @@ namespace SMSwitch.Services.Plivo
 			}
 			catch(Exception exception)
 			{
-				_logger.LogError(exception, $"Could not verify OTP for +{mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber}");
+				_logger.LogError(exception, "Could not verify OTP for +{MobileNumber}", mobileWithCountryCode.CountryPhoneCodeAndPhoneNumber);
 			}
 			return new SMSwitchResponseVerifyOTP(){
 				Verified = false

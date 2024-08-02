@@ -36,6 +36,11 @@ namespace SMSwitch.Services.Plivo
 					}
 				};
 
+				if (SMSwitchGeneralSettings.OtpLength != PlivoSettings.OtpLength)
+				{
+					logger.LogWarning($"Application is trying to set OTP length to {SMSwitchGeneralSettings.OtpLength} but Plivo is fixed at {PlivoSettings.OtpLength}");
+				}
+
 				PlivoApi = new PlivoApi(PlivoSettings.PlivoPrivateSettings.AuthId, PlivoSettings.PlivoPrivateSettings.AuthToken);
 			}
 			catch (Exception ex)

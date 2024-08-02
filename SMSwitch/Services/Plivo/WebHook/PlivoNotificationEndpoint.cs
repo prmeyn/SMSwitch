@@ -9,7 +9,6 @@ namespace SMSwitch.Services.Plivo.WebHook
 {
 	public static class PlivoNotificationEndpoint
 	{
-		public const string PlivoNotificationRouteGroup = "smswitch";
 		public const string PlivoNotificationRoute = "/plivonotification";
 		public static RouteGroupBuilder GroupPlivoNotificationApisV1(this RouteGroupBuilder group)
 		{

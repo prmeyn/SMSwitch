@@ -27,7 +27,7 @@ namespace SMSwitch.Services.Plivo
 				PlivoSettings = new PlivoSettings()
 				{
 					AndroidAppHash = SMSwitchGeneralSettings.AndroidAppHash,
-					OtpLength = SMSwitchGeneralSettings.OtpLength,
+					OtpLength = 6, // SMSwitchGeneralSettings.OtpLength , can only be changed via the Plivo backoffice
 					PlivoPrivateSettings = new PlivoPrivateSettings()
 					{
 						AuthId = plivoConfig["AuthId"],
@@ -45,6 +45,6 @@ namespace SMSwitch.Services.Plivo
 			
 		}
 
-		internal string NotificationUrl => new Uri(_settingsService.BaseUri, $"{PlivoNotificationEndpoint.PlivoNotificationRouteGroup}{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
+		internal string NotificationUrl => new Uri(_settingsService.BaseUri, $"{ConstantStrings.SMSwitchGroupName}{PlivoNotificationEndpoint.PlivoNotificationRoute}").ToString();
 	}
 }

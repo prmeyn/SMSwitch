@@ -19,9 +19,7 @@ namespace SMSwitch
 		private readonly PlivoService _plivoService;
 
 		private readonly SMSwitchDbService _smSwitchDbService;
-
 		private readonly CountryDbService _countryDbService;
-
 		private readonly ILogger<SMSwitchService> _logger;
 
 

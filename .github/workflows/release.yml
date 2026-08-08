@@ -18,7 +18,7 @@ jobs:
     - name: Checkout
       # Pinned to a commit SHA rather than a tag: a tag can be repointed, and this job holds an
       # id-token that can publish to NuGet. Comments record the human-readable version.
-      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: Verify commit exists in origin/main
       run: |
         git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
@@ -33,7 +33,7 @@ jobs:
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: NuGet login (Trusted Publishing)
       id: nuget-login
-      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+      uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
       with:
         user: globalpay
     - name: Push

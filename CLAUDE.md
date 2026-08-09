@@ -151,4 +151,4 @@ Releases are tag-driven: pushing a `v*.*.*` tag builds, tests and publishes to N
 `.github/workflows/release.yml`. The version comes from the tag, not from the csproj. Actions are
 pinned to commit SHAs because that job holds an id-token that can publish.
 
-Licensed **AGPL-3.0** (not GPL) — matching the other network-facing services in the same org.
+Licensed **MIT**, like the other packages in the same org.

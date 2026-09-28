@@ -8,10 +8,14 @@ version: 2
 
 updates:
   - package-ecosystem: "nuget"
-    # Versions live in each .csproj (there is no Directory.Packages.props), so every project
-    # folder is listed. "/" covers SMSwitch.sln itself.
+    # Versions live in each .csproj (there is no Directory.Packages.props), so the project folders
+    # are listed individually.
+    #
+    # The repository root is deliberately absent. It holds SMSwitch.sln, which resolves these same
+    # three projects, so listing both made Dependabot discover every dependency twice: the first run
+    # produced #8 (own-packages) and #9 (microsoft), then a catch-all PR #10 carrying all 11 updates
+    # superseded and closed them both. One mislabelled PR, not the intended split.
     directories:
-      - "/"
       - "/SMSwitch"
       - "/SMSwitch.Tests"
       - "/TestAPIs"
@@ -21,8 +25,9 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-    # A dependency joins the first group it matches, so order is significant: the sibling packages
-    # are claimed before "Microsoft.*"/"System.*", and "*" sweeps up whatever is left.
+    # Intended split: the sibling packages first, then Microsoft/System, then the remainder. The
+    # catch-all "*" must stay last, or it claims everything. Confirm against a real run rather than
+    # trusting this comment — the config this replaced did not split the way it claimed.
     groups:
       own-packages:
         # Listed by name because these share no prefix. A new package from the same org lands in

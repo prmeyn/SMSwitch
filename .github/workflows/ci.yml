@@ -26,7 +26,11 @@ jobs:
       # No setup-dotnet step and no pinned SDK, deliberately matching release.yml: a green pull
       # request then means the same toolchain that will publish can also build. The runner's
       # preinstalled SDK covers net10.0.
-      run: dotnet build SMSwitch.sln --configuration Release
+      #
+      # /warnaserror holds the repository to its standing rule that this build stays at 0 warnings.
+      # A warning that only ever lands in a log is a warning nobody fixes, so a new one — from a
+      # dependency bump, say — turns the pull request red instead. That is the intent.
+      run: dotnet build SMSwitch.sln --configuration Release /warnaserror
     - name: Test
       # SMSwitch.Tests needs neither a MongoDB instance nor provider credentials, so there is
       # nothing to provision here.

@@ -5,6 +5,12 @@ name: Build and Test
 
 on:
   pull_request:
+  # Merges are verified too, not just proposals. Two pull requests can each be green against an
+  # older main and still conflict semantically once both are in; without this, that first showed up
+  # at release time, when the tag build is the only thing standing between it and nuget.org.
+  push:
+    branches:
+      - main
 
 # Pushing again to a pull request makes the in-flight run pointless.
 concurrency:
@@ -12,6 +18,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The job id is the status-check name GitHub reports ("build"), and main's branch protection
+  # requires that exact string. Renaming this key silently stops the required check from ever
+  # arriving, which reads as a pull request that hangs forever rather than as a misconfiguration.
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15

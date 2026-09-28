@@ -23,7 +23,39 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 5
     ignore:
-      - dependency-name: "*"
+      # Twilio is deliberately absent from this list, so its major releases DO get offered: it is
+      # the one dependency where the fix for an advisory is most likely to live only in a new major,
+      # and an unreachable fix on the authentication path is worse than a breaking-change review.
+      #
+      # Everything else is still held to its current major. Dependabot's ignore has no negation, so
+      # "all but Twilio" can only be spelled out. That inverts the default: a package added to a
+      # .csproj and not added here will have its major bumps offered too. Prefix patterns cover the
+      # families (Mongo* deliberately also catches MongoDB.* should it ever be referenced directly).
+      - dependency-name: "Microsoft.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "System.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "xunit*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Mongo*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "uSignIn.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Meyn.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "EarthCountriesInfo"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "HumanLanguages"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Plivo"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "SharpCompress"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Snappier"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "coverlet.collector"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Swashbuckle.AspNetCore"
         update-types: ["version-update:semver-major"]
     # Intended split: the sibling packages first, then Microsoft/System, then the remainder. The
     # catch-all "*" must stay last, or it claims everything. Confirm against a real run rather than

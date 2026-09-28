@@ -1,0 +1,53 @@
+# Dependabot version updates. Two ecosystems: the NuGet packages the three projects reference, and
+# the actions used by the release workflow.
+#
+# Every entry ignores semver-major updates. This library is on the authentication path and spends
+# real money per message, so a major bump is a deliberate, reviewed act — not something that
+# arrives while nobody is looking.
+version: 2
+
+updates:
+  - package-ecosystem: "nuget"
+    # Versions live in each .csproj (there is no Directory.Packages.props), so every project
+    # folder is listed. "/" covers SMSwitch.sln itself.
+    directories:
+      - "/"
+      - "/SMSwitch"
+      - "/SMSwitch.Tests"
+      - "/TestAPIs"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    # A dependency joins the first group it matches, so order is significant: the sibling packages
+    # are claimed before "Microsoft.*"/"System.*", and "*" sweeps up whatever is left.
+    groups:
+      own-packages:
+        # Listed by name because these share no prefix. A new package from the same org lands in
+        # third-party until it is added here.
+        patterns:
+          - "EarthCountriesInfo"
+          - "HumanLanguages"
+          - "Meyn.Utilities"
+          - "MongoDbService"
+          - "MongoDbTokenManager"
+          - "uSignIn.CommonSettings"
+      microsoft:
+        patterns:
+          - "Microsoft.*"
+          - "System.*"
+      third-party:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    # Always the repo root; Dependabot reads .github/workflows from there.
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

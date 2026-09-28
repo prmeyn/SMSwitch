@@ -1,0 +1,37 @@
+# Pull-request CI: build and test. Publishing stays in release.yml, which is tag-driven and holds
+# the id-token; this job holds nothing and needs nothing.
+
+name: Build and Test
+
+on:
+  pull_request:
+
+# Pushing again to a pull request makes the in-flight run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+    - name: Checkout
+      # Pinned to a commit SHA rather than a tag, as in release.yml: a tag can be repointed.
+      # Comments record the human-readable version.
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+    - name: Build
+      # No setup-dotnet step and no pinned SDK, deliberately matching release.yml: a green pull
+      # request then means the same toolchain that will publish can also build. The runner's
+      # preinstalled SDK covers net10.0.
+      #
+      # /warnaserror holds the repository to its standing rule that this build stays at 0 warnings.
+      # A warning that only ever lands in a log is a warning nobody fixes, so a new one — from a
+      # dependency bump, say — turns the pull request red instead. That is the intent.
+      run: dotnet build SMSwitch.sln --configuration Release /warnaserror
+    - name: Test
+      # SMSwitch.Tests needs neither a MongoDB instance nor provider credentials, so there is
+      # nothing to provision here.
+      run: dotnet test SMSwitch.sln --configuration Release --no-build

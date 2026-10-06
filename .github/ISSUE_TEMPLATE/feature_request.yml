@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an improvement or new capability for SMSwitch.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the use case rather than the solution, e.g. "I need to ... but currently ..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How you imagine it working, including any API sketch.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you use today, or other approaches you've thought about.
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Would you be willing to send a pull request?
+      options:
+        - "Yes"
+        - "Maybe, with some guidance"
+        - "No"

@@ -1,0 +1,50 @@
+name: Bug report
+description: Something in SMSwitch doesn't work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. **Security vulnerabilities should not be reported
+        here**; see the [security policy](https://github.com/prmeyn/SMSwitch/security/policy).
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      description: Which version of SMSwitch are you using?
+      placeholder: e.g. 10.2.1
+    validations:
+      required: true
+  - type: input
+    id: dotnet
+    attributes:
+      label: .NET version and OS
+      placeholder: e.g. .NET 10.0.1 on Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include any exception message and stack trace.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: A minimal code sample or project that shows the problem.
+      render: csharp
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Configuration (with secrets removed), logs, or anything else that might help.

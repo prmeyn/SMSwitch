@@ -57,9 +57,10 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "Swashbuckle.AspNetCore"
         update-types: ["version-update:semver-major"]
-    # Intended split: the sibling packages first, then Microsoft/System, then the remainder. The
-    # catch-all "*" must stay last, or it claims everything. Confirm against a real run rather than
-    # trusting this comment — the config this replaced did not split the way it claimed.
+    # Updates are split into separate pull requests per group. Dependabot puts a dependency in every
+    # group whose patterns match it (not just the first), so the catch-all "third-party" group lists
+    # the other groups' patterns under exclude-patterns. Without them, any third-party update in a
+    # run produced one superset pull request that replaced the narrower ones.
     groups:
       own-packages:
         # Listed by name because these share no prefix. A new package from the same org lands in
@@ -78,6 +79,18 @@ updates:
       third-party:
         patterns:
           - "*"
+        # "*" alone would also match every package above: Dependabot puts a dependency in
+        # every group it matches, not just the first. These exclusions make this group
+        # really mean "everything else". Keep them in step with the groups above.
+        exclude-patterns:
+          - "EarthCountriesInfo"
+          - "HumanLanguages"
+          - "Meyn.Utilities"
+          - "MongoDbService"
+          - "MongoDbTokenManager"
+          - "uSignIn.CommonSettings"
+          - "Microsoft.*"
+          - "System.*"
 
   - package-ecosystem: "github-actions"
     # Always the repo root; Dependabot reads .github/workflows from there.

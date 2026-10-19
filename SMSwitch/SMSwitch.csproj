@@ -29,13 +29,13 @@
     <!-- The Microsoft.Extensions.* abstractions, Configuration.Binder included, ship in the
          Microsoft.AspNetCore.App shared framework referenced above. Referencing them as
          packages as well is redundant and raises NU1510. -->
-    <PackageReference Include="MongoDbService" Version="10.3.1" />
-    <PackageReference Include="MongoDbTokenManager" Version="10.3.4" />
+    <PackageReference Include="MongoDbService" Version="10.3.2" />
+    <PackageReference Include="MongoDbTokenManager" Version="10.3.5" />
     <PackageReference Include="Plivo" Version="5.53.0" />
     <PackageReference Include="SharpCompress" Version="0.50.6" />
     <PackageReference Include="Snappier" Version="1.3.1" />
     <PackageReference Include="Twilio" Version="8.1.0" />
-    <PackageReference Include="uSignIn.CommonSettings" Version="10.2.1" />
+    <PackageReference Include="uSignIn.CommonSettings" Version="10.2.2" />
   </ItemGroup>
 	<ItemGroup>
 		<None Include="../LICENSE" Pack="true" PackagePath="\" />

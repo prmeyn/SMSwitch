@@ -30,7 +30,7 @@
          Microsoft.AspNetCore.App shared framework referenced above. Referencing them as
          packages as well is redundant and raises NU1510. -->
     <PackageReference Include="MongoDbService" Version="10.3.2" />
-    <PackageReference Include="MongoDbTokenManager" Version="10.3.5" />
+    <PackageReference Include="MongoDbTokenManager" Version="10.3.6" />
     <PackageReference Include="Plivo" Version="5.53.0" />
     <PackageReference Include="SharpCompress" Version="0.50.7" />
     <PackageReference Include="Snappier" Version="1.3.1" />

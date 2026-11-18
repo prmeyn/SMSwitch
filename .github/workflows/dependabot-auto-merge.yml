@@ -1,0 +1,32 @@
+# Turns on auto-merge for Dependabot's patch and minor updates. The pull request then merges by
+# itself once the branch protection's required check (the CI build) passes; nothing merges on red.
+#
+# Major updates are left for a human: dependabot.yml already ignores them for version updates, but
+# security updates bypass those ignore rules and can still arrive as a major bump.
+#
+# A merge made with GITHUB_TOKEN does not start other workflows, so CI does not re-run on main after
+# an auto-merge. The pull request's own CI has already passed, and release.yml builds and tests
+# again at tag time.
+name: Dependabot auto-merge
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository_owner == 'prmeyn'
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      - name: Enable auto-merge for patch and minor updates
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
